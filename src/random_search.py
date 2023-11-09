@@ -4,20 +4,20 @@ import random
 def random_search_HPL(node_count, core_count, iter_count):
     # 定义参数范围
     param_ranges = {
-        "Ns": [10, 100000],
-        "NBs": [10, 1000],
+        "N": [10, 100000],
+        "NB": [10, 1000],
         "PMAP": [0, 1],
-        "Qs": [1, core_count],  # 请将core_count替换为实际的核心数
-        "PFACTs": [0, 2],
-        "NBMINs": [2, 50],
-        "NDIVs": [2, 10],
-        "RFACTs": [0, 2],
-        "BCASTs": [0, 5],
-        "DEPTHs": [0, 6],
+        "Q": [1, core_count],  # 请将core_count替换为实际的核心数
+        "PFACT": [0, 2],
+        "NBMIN": [2, 50],
+        "NDIV": [2, 10],
+        "RFACT": [0, 2],
+        "BCAST": [0, 5],
+        "DEPTH": [0, 6],
         "SWAP": [0, 2],
         "L1": [0, 1],
         "U": [0, 1],
-        "Equilibration": [0, 1]
+        "EQUIL": [0, 1]
     }
     for _ in range(iter_count):
         random_params = {}
