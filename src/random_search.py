@@ -19,6 +19,7 @@ def random_search_HPL(node_count, core_count, iter_count):
         "U": [0, 1],
         "EQUIL": [0, 1]
     }
+    best_param = {}
     for _ in range(iter_count):
         random_params = {}
         for param, param_range in param_ranges.items():

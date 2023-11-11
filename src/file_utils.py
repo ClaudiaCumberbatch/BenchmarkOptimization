@@ -1,5 +1,23 @@
 import traceback
 
+    # new_param = {
+    #     "N": N,
+    #     "NB": NB,
+    #     "PMAP": PMAP,
+    #     "Q": Q,  # 请将core_count替换为实际的核心数
+    #     "PFACT": PFACT,
+    #     "NBMIN": NBMIN,
+    #     "NDIV": NDIV,
+    #     "RFACT": RFACT,
+    #     "BCAST": BCAST,
+    #     "DEPTH": DEPTH,
+    #     "SWAP": SWAP,
+    #     "L1": L1,
+    #     "U": U,
+    #     "EQUIL": EQUIL,
+    #     "Time": Time,
+    #     "Gflops": Gflops
+    # }  
 def write_to_HPL_dat(file_name, new_param, core_count):
     try:
         with open('HPL.dat', 'w') as file:
