@@ -133,3 +133,45 @@ def parse_HPL_dat(filename):
         "Gflops": Gflops
     }  
     return param
+
+def write_to_HPCG_dat(new_param, Time):
+    try:
+        with open('hpcg.dat', 'w') as file:
+            file.write("HPCG benchmark input file\n")
+            file.write("Sandia National Laboratories; University of Tennessee, Knoxville\n")
+            file.write(f"{new_param['NX']} {new_param['NY']} {new_param['NZ']}\n")
+            file.write(Time)
+        return "File write successfully"
+    except Exception as e:
+        traceback.print_exc()
+        return f"Error in file write: {str(e)}" 
+
+
+def parse_HPCG_txt(filename):
+    # parse the output .txt file of HPCG
+
+    with open(filename, 'r') as file:
+        lines = file.readlines()
+
+    NX_index = 15
+    NX = int(lines[NX_index].split("=")[1])
+    NY = int(lines[NX_index + 1].split("=")[1])
+    NZ = int(lines[NX_index + 4].split("=")[1])
+
+    Gflops_index = 118
+    Gflops = float(lines[Gflops_index].split("=")[1])
+
+    # the total benchmark time in sec
+    Time_index = 89
+    Time = float(lines[Time_index].split("="[1])) 
+
+    param = {
+        "NX" = NX,
+        "NY" = NY,
+        "NZ" = NZ,
+        "Time" = Time
+        "Gflops" = Gflops
+    }
+    return param
+
+    
