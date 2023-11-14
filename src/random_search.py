@@ -28,4 +28,25 @@ def random_search_HPL(node_count, core_count, iter_count):
         res = write_to_HPL_dat("HPL.dat", random_params, core_count)
         print(res)
     
+def random_search_HPCG(iter_count):
+    # change the benchmark time
+    Time = 1860
+    # the bound of multiplier (both included)
+    lower_bound = 2
+    upper_bound = 30
+    for _ in range(iter_count):
+        # generate the multiplier to 8
+        NX = random.randint(lower_bound, upper_bound)
+        NY = random.randint(lower_bound, upper_bound)
+        NZ = random.randint(lower_bound, upper_bound)
+        random_params = {
+            "NX" = NX,
+            "NY" = NY,
+            "NZ" = NZ,
+        }
+        res = write_to_HPCG_dat(random_params, Time)
+        print(res)
+        
+
+
     
