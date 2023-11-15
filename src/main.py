@@ -24,7 +24,8 @@ benchmark = args.benchmark
 # 根据benchmark参数调用不同的函数
 function_key = algorithm_preference + "_" + benchmark
 switcher = {
-    "random_search_HPL": random_search_HPL
+    "random_search_HPL": random_search_HPL,
+    "random_search_HPCG": random_search_HPCG
 }
 func = switcher.get(function_key, "Invalid choice of algorithm preference and benchmark")
 func(node_count, core_count, iter_count)
