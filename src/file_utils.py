@@ -20,7 +20,7 @@ import traceback
     # }  
 def write_to_HPL_dat(file_name, new_param, core_count):
     try:
-        with open('HPL.dat', 'w') as file:
+        with open(file_name, 'w') as file:
             file.write("HPLinpack benchmark input file\n")
             file.write("Innovative Computing Laboratory, University of Tennessee\n")
             file.write("HPL.out      output file name (if any)\n")
