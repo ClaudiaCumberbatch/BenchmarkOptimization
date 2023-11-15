@@ -166,11 +166,11 @@ def parse_HPCG_txt(filename):
     Time = float(lines[Time_index].split("="[1])) 
 
     param = {
-        "NX" = NX,
-        "NY" = NY,
-        "NZ" = NZ,
-        "Time" = Time
-        "Gflops" = Gflops
+        "NX": NX,
+        "NY": NY,
+        "NZ": NZ,
+        "Time": Time,
+        "Gflops": Gflops
     }
     return param
 
