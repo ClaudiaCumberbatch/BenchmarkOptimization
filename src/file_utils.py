@@ -114,6 +114,7 @@ def parse_HPL_dat(filename):
             Gflops = float(parts[-1])
 
     param = {
+        "cores": P * Q,
         "N": N,
         "NB": NB,
         "PMAP": PMAP,

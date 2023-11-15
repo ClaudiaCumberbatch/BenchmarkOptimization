@@ -54,7 +54,7 @@ def get_HPL_data(database_name, table_name, cores, new_param):
             file_utils.write_to_HPL_dat('HPL.dat', new_param, cores)
             date = os.system("date")
             os.system(f"mpiexec.hydra -np {cores} ./xhpl > ../result/{cores}/{date}.out 2> ../result/{cores}/{date}.err")
-            result = file_utils.parse_HPL_out(f"../result/{cores}/{date}.out")
+            result = file_utils.parse_HPL_dat(f"../result/{cores}/{date}.out")
             store(conn, result, table_name)
         close(conn)
         return result
