@@ -5,11 +5,9 @@ algorithm_preference: random_search
 iter_count: 100
 benchmark: HPL
 
-# binary path and database path
-path_to_HPL_exe: /home/jiayh_lab/cse12012138/HPL/hpl-2.3/bin/Linux_Intel64/xhpl
-path_to_HPCG_exe: /home/jiayh_lab/cse12012138/HPCG/hpcg/build/bin/xhpcg
-path_to_HPL_db: /home/jiayh_lab/cse12012138/BenchmarkOptimization/db/HPL.db
-path_to_HPCG_db: /home/jiayh_lab/cse12012138/BenchmarkOptimization/db/HPCG.db
+# binary path
+path_to_HPL: /home/jiayh_lab/cse12012138/HPL/hpl-2.3/bin/Linux_Intel64/
+path_to_HPCG: /home/jiayh_lab/cse12012138/HPCG/hpcg/build/bin/
 
 # HPL parameter range
 N: [10, 100000]

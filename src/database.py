@@ -43,17 +43,24 @@ def close(conn):
         return False
 
 # 和数据库交互的全流程
-def get_HPL_data(database_name, table_name, cores, new_param):
+def get_HPL_data(cores, new_param):
+    database_name = 'HPL.db'
+    table_name = 'table1'
+    config = file_utils.parse_config_yaml()
+    cores = config['core_count']
+    path_to_HPL = config['path_to_HPL']
+    path_to_HPL_exe = path_to_HPL + "xhpl"
+    path_to_HPL_dat = path_to_HPL + "HPL.dat"
     try:
         conn = connect(database_name)
         if conn is None:
             return None
-        result = query(conn, cores, new_param["PMAP"], new_param["SWAP"], new_param["L1"], new_param["U"], new_param["EQUIL"], new_param["DEPTH"], new_param["BCAST"], new_param["RFACT"], new_param["NDIV"], new_param["PFACT"], new_param["NBMIN"], new_param["N"], new_param["NB"], new_param["P"], new_param["Q"])
+        result = query(conn, cores, new_param["PMAP"], new_param["SWAP"], new_param["L1"], new_param["U"], new_param["EQUIL"], new_param["DEPTH"], new_param["BCAST"], new_param["RFACT"], new_param["NDIV"], new_param["PFACT"], new_param["NBMIN"], new_param["N"], new_param["NB"], cores // new_param['Q'], new_param["Q"])
         # 如果查询结果为空，执行搜索程序，将新结果写入数据库
         if len(result) == 0:
-            file_utils.write_to_HPL_dat('HPL.dat', new_param, cores)
+            file_utils.write_to_HPL_dat(path_to_HPL_dat, new_param, cores)
             date = os.system("date")
-            os.system(f"mpiexec.hydra -np {cores} ./xhpl > ../result/{cores}/{date}.out 2> ../result/{cores}/{date}.err")
+            os.system(f"mpiexec.hydra -np {cores} {path_to_HPL_exe} > ../result/{cores}/{date}.out 2> ../result/{cores}/{date}.err")
             result = file_utils.parse_HPL_dat(f"../result/{cores}/{date}.out")
             store(conn, result, table_name)
         close(conn)
