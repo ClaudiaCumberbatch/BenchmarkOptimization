@@ -1,4 +1,5 @@
 import traceback
+import yaml
 
     # new_param = {
     #     "N": N,
@@ -176,3 +177,15 @@ def parse_HPCG_txt(filename):
     return param
 
     
+def parse_config_yaml():
+    with open('../config/config.yaml', 'r') as file:
+        config = yaml.safe_load(file)
+    # 定义P、Q范围
+    factors = []
+    core_count = config['core_count']
+    for i in range(1, core_count + 1):
+        if core_count % i == 0:
+            factors.append(i)
+    
+    return config
+

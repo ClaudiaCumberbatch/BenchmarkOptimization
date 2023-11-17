@@ -1,0 +1,28 @@
+# hardware configuration and algorithm configuration
+core_count: 4
+node_count: 1
+algorithm_preference: random_search
+iter_count: 100
+benchmark: HPL
+
+# binary path and database path
+path_to_HPL_exe: /home/jiayh_lab/cse12012138/HPL/hpl-2.3/bin/Linux_Intel64/xhpl
+path_to_HPCG_exe: /home/jiayh_lab/cse12012138/HPCG/hpcg/build/bin/xhpcg
+path_to_HPL_db: /home/jiayh_lab/cse12012138/BenchmarkOptimization/db/HPL.db
+path_to_HPCG_db: /home/jiayh_lab/cse12012138/BenchmarkOptimization/db/HPCG.db
+
+# HPL parameter range
+N: [10, 100000]
+NB: [10, 1000]
+Q: [1, 2, 4]
+PMAP: [0, 1]
+PFACT: [0, 2]
+NBMIN: [2, 50]
+NDIV: [2, 10]
+RFACT: [0, 2]
+BCAST: [0, 5]
+DEPTH: [0, 6]
+SWAP: [0, 2]
+L1: [0, 1]
+U: [0, 1]
+EQUIL: [0, 1]
