@@ -109,8 +109,8 @@ def get_HPL_data(new_param):
             # print("executing HPL...")
             # close(conn)
             # return
-            os.system(f"mpiexec.hydra -np {cores} {path_to_HPL_exe} > ../result/{cores}/{date}.out 2> ../result/{cores}/{date}.err")
-            data = file_utils.parse_HPL_dat(f"../result/{cores}/{date}.out")
+            os.system(f"mpiexec.hydra -np {cores} {path_to_HPL_exe} > ../logs/{date}.out 2> ../logs/{date}.err")
+            data = file_utils.parse_HPL_dat(f"../logs/{date}.out")
             store(conn, data, table_name)
             result = data["Gflops"]
         close(conn)
