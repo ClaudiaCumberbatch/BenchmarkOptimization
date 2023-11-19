@@ -1,5 +1,6 @@
 from file_utils import *
 import random
+from database import *
 
 def random_search_HPL(node_count, core_count, iter_count):
     # 定义参数范围
@@ -24,6 +25,7 @@ def random_search_HPL(node_count, core_count, iter_count):
         "EQUIL": [0, 1]
     }
     best_param = {}
+    best_gflops = 0
     for _ in range(iter_count):
         random_params = {}
         for param, param_range in param_ranges.items():
@@ -32,11 +34,14 @@ def random_search_HPL(node_count, core_count, iter_count):
             else:
                 random_value = random.randint(param_range[0], param_range[1])
             random_params[param] = random_value
-        res = write_to_HPL_dat("HPL.dat", random_params, core_count)
-        print(res)
+        tempt_gflops = get_HPL_data(core_count, random_params)
+        if tempt_gflops > best_gflops:
+            best_gflops = tempt_gflops
+            best_param = random_params
+    return best_param, best_gflops
 
     
-def random_search_HPCG(iter_count):
+def random_search_HPCG(node_count, core_count, iter_count):
     # change the benchmark time
     Time = 1860
     # the bound of multiplier (both included)
