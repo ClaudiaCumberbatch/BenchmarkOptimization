@@ -20,4 +20,6 @@ switcher = {
     "random_search_HPCG": random_search_HPCG
 }
 func = switcher.get(function_key, "Invalid choice of algorithm preference and benchmark")
-func(node_count, core_count, iter_count)
+best_param, best_gflops = func(node_count, core_count, iter_count)
+print("The best parameter is: ", best_param)
+print("The best gflops is: ", best_gflops)

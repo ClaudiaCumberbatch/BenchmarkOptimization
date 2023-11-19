@@ -5,7 +5,7 @@ import yaml
     #     "N": N,
     #     "NB": NB,
     #     "PMAP": PMAP,
-    #     "Q": Q,  # 请将core_count替换为实际的核心数
+    #     "Q": Q,  
     #     "PFACT": PFACT,
     #     "NBMIN": NBMIN,
     #     "NDIV": NDIV,
