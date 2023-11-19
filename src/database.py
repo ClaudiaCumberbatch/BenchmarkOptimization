@@ -43,7 +43,7 @@ def close(conn):
         return False
 
 # 和数据库交互的全流程
-def get_HPL_data(cores, new_param):
+def get_HPL_data(new_param):
     database_name = 'HPL.db'
     table_name = 'table1'
     config = file_utils.parse_config_yaml()

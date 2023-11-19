@@ -3,6 +3,7 @@ import random
 
 def random_search_HPL(node_count, core_count, iter_count):
     # 定义参数范围
+    '''
     factors = []
     for i in range(1, core_count + 1):
         if core_count % i == 0:
@@ -23,6 +24,8 @@ def random_search_HPL(node_count, core_count, iter_count):
         "U": [0, 1],
         "EQUIL": [0, 1]
     }
+    '''
+    param_ranges = get_HPL_params()
     best_param = {}
     for _ in range(iter_count):
         random_params = {}

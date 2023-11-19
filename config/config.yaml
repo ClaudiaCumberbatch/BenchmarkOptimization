@@ -6,13 +6,13 @@ iter_count: 100
 benchmark: HPL
 
 # binary path
-path_to_HPL: /home/jiayh_lab/cse12012138/HPL/hpl-2.3/bin/Linux_Intel64/
-path_to_HPCG: /home/jiayh_lab/cse12012138/HPCG/hpcg/build/bin/
+path_to_HPL: ~/HPL/hpl-2.3/bin/Linux_Intel64/
+path_to_HPCG: ~/HPCG/hpcg/build/bin/
 
 # HPL parameter range
 N: [10, 100000]
 NB: [10, 1000]
-Q: [1, 2, 4]
+Q: [1, 4]
 PMAP: [0, 1]
 PFACT: [0, 2]
 NBMIN: [2, 50]

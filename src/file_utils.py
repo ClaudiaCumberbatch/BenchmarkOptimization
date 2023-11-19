@@ -186,6 +186,27 @@ def parse_config_yaml():
     for i in range(1, core_count + 1):
         if core_count % i == 0:
             factors.append(i)
+    config['Q'] = factors
     
     return config
+
+def get_HPL_params():
+    config = parse_config_yaml()
+    param_ranges = {
+        "N": config['N'],
+        "NB": config['NB'],
+        "PMAP": config['PMAP'],
+        "Q": config['Q'], 
+        "PFACT": config['PFACT'],
+        "NBMIN": config['NBMIN'],
+        "NDIV": config['NDIV'],
+        "RFACT": config['RFACT'],
+        "BCAST": config['BCAST'],
+        "DEPTH": config['DEPTH'],
+        "SWAP": config['SWAP'],
+        "L1": config['L1'],
+        "U": config['U'],
+        "EQUIL": config['EQUIL']
+    }
+    return param_ranges
 
