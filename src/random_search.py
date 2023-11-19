@@ -37,7 +37,7 @@ def random_search_HPL(node_count, core_count, iter_count):
             else:
                 random_value = random.randint(param_range[0], param_range[1])
             random_params[param] = random_value
-        tempt_gflops = get_HPL_data(core_count, random_params)
+        tempt_gflops = get_HPL_data(random_params)
         if tempt_gflops > best_gflops:
             best_gflops = tempt_gflops
             best_param = random_params

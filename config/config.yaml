@@ -2,17 +2,16 @@
 core_count: 4
 node_count: 1
 algorithm_preference: random_search
-iter_count: 100
+iter_count: 1
 benchmark: HPL
 
 # binary path
-path_to_HPL: ~/HPL/hpl-2.3/bin/Linux_Intel64/
+path_to_HPL: /home/jiayh_lab/cse12012138/HPL/hpl-2.3/bin/Linux_Intel64
 path_to_HPCG: ~/HPCG/hpcg/build/bin/
 
 # HPL parameter range
 N: [10, 100000]
 NB: [10, 1000]
-Q: [1, 4]
 PMAP: [0, 1]
 PFACT: [0, 2]
 NBMIN: [2, 50]
@@ -24,3 +23,9 @@ SWAP: [0, 2]
 L1: [0, 1]
 U: [0, 1]
 EQUIL: [0, 1]
+
+# HPCG parameter range
+NX: [2, 1000]
+NY: [2, 1000]
+NZ: [2, 1000]
+Time: 1860

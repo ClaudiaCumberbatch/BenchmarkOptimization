@@ -100,7 +100,7 @@ def get_HPL_data(new_param):
     try:
         conn = connect(database_name)
         if conn is None:
-            return None
+            raise Exception("数据库连接失败")
         result = query(conn, table_name, cores, new_param["PMAP"], new_param["SWAP"], new_param["L1"], new_param["U"], new_param["EQUIL"], new_param["DEPTH"], new_param["BCAST"], new_param["RFACT"], new_param["NDIV"], new_param["PFACT"], new_param["NBMIN"], new_param["N"], new_param["NB"], cores // new_param['Q'], new_param["Q"])
         # 如果查询结果为空，执行搜索程序，将新结果写入数据库
         if len(result) == 0:

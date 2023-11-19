@@ -1,9 +1,10 @@
 import argparse
 from random_search import *
 import yaml
+from file_utils import *
+from output_utils import *
 
-with open('config.yaml', 'r') as file:
-    config = yaml.safe_load(file)
+config = parse_config_yaml()
 
 # 现在，config是一个包含配置的字典
 core_count = config['core_count']
@@ -21,5 +22,5 @@ switcher = {
 }
 func = switcher.get(function_key, "Invalid choice of algorithm preference and benchmark")
 best_param, best_gflops = func(node_count, core_count, iter_count)
-print("The best parameter is: ", best_param)
-print("The best gflops is: ", best_gflops)
+
+output(best_param, best_gflops)
