@@ -33,15 +33,24 @@ EQUIL_dic = {
 }
 
 RFACT_dic = {
-    0: "L",
-    1: "C",
-    2: "R"
+    0: "Left",
+    1: "Crout",
+    2: "Right"
 }
 
 PFACT_dic = {
-    0: "L",
-    1: "C",
-    2: "R"
+    0: "Left",
+    1: "Crout",
+    2: "Right"
+}
+
+BCAST_dic = {
+    0: "1ring",
+    1: "1ringM",
+    2: "2ring",
+    3: "2ringM",
+    4: "Blong",
+    5: "BlongM"
 }
 
 # 连接数据库
@@ -82,6 +91,7 @@ def query(conn, table, cores, PMAP, SWAP, L1, U, EQUIL, DEPTH, BCAST, RFACT, NDI
         EQUIL = EQUIL_dic[EQUIL]
         RFACT = RFACT_dic[RFACT]
         PFACT = PFACT_dic[PFACT]
+        BCAST = BCAST_dic[BCAST]
         sql = f"SELECT Gflops FROM {table} WHERE cores={cores} AND PMAP='{PMAP}' AND SWAP='{SWAP}' AND L1='{L1}' AND U='{U}' AND EQUIL='{EQUIL}' AND DEPTH={DEPTH} AND BCAST={BCAST} AND RFACT='{RFACT}' AND NDIV={NDIV} AND PFACT='{PFACT}' AND NBMIN={NBMIN} AND N={N} AND NB={NB} AND P={P} AND Q={Q}"
         cursor.execute(sql)
         result = cursor.fetchall()

@@ -36,13 +36,13 @@ def write_to_HPL_dat(file_name, new_param, core_count):
             file.write("{:<30} {}\n".format(f"{new_param['Q']}", "Qs"))
             file.write("{:<30} {}\n".format("-1", "threshold"))
             file.write("{:<30} {}\n".format("1", "# of panel fact"))
-            file.write("{:<30} {}\n".format(f"{new_param['PFACT']}", "PFACTs (0=left, 1=Crout, 2=Right)"))
+            file.write("{:<30} {}\n".format(f"{new_param['PFACT']}", "PFACTs (0=Left, 1=Crout, 2=Right)"))
             file.write("{:<30} {}\n".format("1", "# of recursive stopping criterium"))
             file.write("{:<30} {}\n".format(f"{new_param['NBMIN']}", "NBMINs"))
             file.write("{:<30} {}\n".format("1", "# of panels in recursion"))
             file.write("{:<30} {}\n".format(f"{new_param['NDIV']}", "NDIVs"))
             file.write("{:<30} {}\n".format("1", "# of recursive panel fact."))
-            file.write("{:<30} {}\n".format(f"{new_param['RFACT']}", "RFACTs (0=left, 1=Crout, 2=Right)"))
+            file.write("{:<30} {}\n".format(f"{new_param['RFACT']}", "RFACTs (0=Left, 1=Crout, 2=Right)"))
             file.write("{:<30} {}\n".format("1", "# of broadcast"))
             file.write("{:<30} {}\n".format(f"{new_param['BCAST']}", "BCASTs (0=1rg,1=1rM,2=2rg,3=2rM,4=Lng,5=LnM)"))
             file.write("{:<30} {}\n".format("1", "# of lookahead depth"))
@@ -209,3 +209,13 @@ def get_HPL_params():
     }
     return param_ranges
 
+def get_HPCG_params():
+    config = parse_config_yaml()
+    param_ranges = {
+        "NX": config['NX'],
+        "NY": config['NY'],
+        "NZ": config['NZ']
+    }
+    return param_ranges
+
+print(parse_HPL_dat('/home/jiayh_lab/cse12012138/HPL/hpl-2.3/bin/Linux_Intel64/job.7660.out'))

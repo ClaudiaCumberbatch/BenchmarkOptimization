@@ -13,7 +13,19 @@ def HPL_objective(trial):
     Gflops = get_HPL_data(param_values)
     return Gflops
 
+def HPCG_objective(trial):
+    param_ranges = get_HPCG_params()
+    param_values = {}
+    for param, param_range in param_ranges.items():
+        param_values[param] = trial.suggest_int(param, param_range[0], param_range[1])
+    
+
 def optuna_HPL(node_count, core_count, iter_count):
     study = optuna.create_study(direction='maximize')
     study.optimize(HPL_objective, n_trials=iter_count)
+    return study.best_params, study.best_value
+
+def optuna_HPCG(node_count, core_count, iter_count):
+    study = optuna.create_study(direction='maximize')
+    study.optimize(HPCG_objective, n_trials=iter_count)
     return study.best_params, study.best_value
