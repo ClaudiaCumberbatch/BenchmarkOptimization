@@ -217,5 +217,3 @@ def get_HPCG_params():
         "NZ": config['NZ']
     }
     return param_ranges
-
-print(parse_HPL_dat('/home/jiayh_lab/cse12012138/HPL/hpl-2.3/bin/Linux_Intel64/job.7660.out'))
