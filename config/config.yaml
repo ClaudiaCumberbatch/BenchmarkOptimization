@@ -6,7 +6,8 @@ iter_count: 1
 benchmark: HPL
 
 # binary path
-path_to_HPL: /home/jiayh_lab/cse12012138/HPL/hpl-2.3/bin/Linux_Intel64
+# path_to_HPL: /home/jiayh_lab/cse12012138/HPL/hpl-2.3/bin/Linux_Intel64
+path_to_HPL: ~/hpl/hpl-2.3/bin/Linux_Intel64/
 path_to_HPCG: ~/HPCG/hpcg/build/bin/
 
 # HPL parameter range
