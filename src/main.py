@@ -26,4 +26,4 @@ switcher = {
 func = switcher.get(function_key, "Invalid choice of algorithm preference and benchmark")
 best_param, best_gflops = func(node_count, core_count, iter_count)
 
-output(best_param, best_gflops)
+output(iter_count, best_param, best_gflops)
