@@ -81,7 +81,7 @@ def store(conn, data, table_name):
         return False
 
 # 从数据库中查询，可能为空  
-def query(conn, table, cores, PMAP, SWAP, L1, U, EQUIL, DEPTH, BCAST, RFACT, NDIV, PFACT, NBMIN, N, NB, P, Q):
+def HPL_query(conn, table, cores, PMAP, SWAP, L1, U, EQUIL, DEPTH, BCAST, RFACT, NDIV, PFACT, NBMIN, N, NB, P, Q):
     try:
         cursor = conn.cursor()
         PMAP = PMAP_dic[PMAP]
@@ -93,6 +93,18 @@ def query(conn, table, cores, PMAP, SWAP, L1, U, EQUIL, DEPTH, BCAST, RFACT, NDI
         PFACT = PFACT_dic[PFACT]
         BCAST = BCAST_dic[BCAST]
         sql = f"SELECT Gflops FROM {table} WHERE cores={cores} AND PMAP='{PMAP}' AND SWAP='{SWAP}' AND L1='{L1}' AND U='{U}' AND EQUIL='{EQUIL}' AND DEPTH={DEPTH} AND BCAST='{BCAST}' AND RFACT='{RFACT}' AND NDIV={NDIV} AND PFACT='{PFACT}' AND NBMIN={NBMIN} AND N={N} AND NB={NB} AND P={P} AND Q={Q}"
+        cursor.execute(sql)
+        result = cursor.fetchall()
+        return result
+    except Exception as e:
+        print(f"查询数据库时发生错误: {str(e)}")
+        traceback.print_exc()
+        return None
+
+def HPCG_query(conn, table, cores, NX, NT, NZ):
+    try:
+        cursor = conn.cursor()
+        sql = f"SELECT Gflops FROM {table} WHERE cores={cores} AND NX={NX} AND NY={NY} AND NZ={NZ}"
         cursor.execute(sql)
         result = cursor.fetchall()
         return result
@@ -124,7 +136,7 @@ def get_HPL_data(new_param):
         conn = connect(database_name)
         if conn is None:
             raise Exception("数据库连接失败")
-        result = query(conn, table_name, cores, new_param["PMAP"], new_param["SWAP"], new_param["L1"], new_param["U"], new_param["EQUIL"], new_param["DEPTH"], new_param["BCAST"], new_param["RFACT"], new_param["NDIV"], new_param["PFACT"], new_param["NBMIN"], new_param["N"], new_param["NB"], cores // new_param['Q'], new_param["Q"])
+        result = HPL_query(conn, table_name, cores, new_param["PMAP"], new_param["SWAP"], new_param["L1"], new_param["U"], new_param["EQUIL"], new_param["DEPTH"], new_param["BCAST"], new_param["RFACT"], new_param["NDIV"], new_param["PFACT"], new_param["NBMIN"], new_param["N"], new_param["NB"], cores // new_param['Q'], new_param["Q"])
         # 如果查询结果为空，执行搜索程序，将新结果写入数据库
         if len(result) == 0:
             print(file_utils.write_to_HPL_dat('HPL.dat', new_param, cores))
@@ -142,4 +154,36 @@ def get_HPL_data(new_param):
     except Exception as e:
         print(f"获取数据时发生错误: {str(e)}")
         traceback.print_exc()  # 打印异常的详细信息，包括行数
+        return None
+
+def get_HPCG_data(new_param):
+    config = file_utils.parse_config_yaml()
+    database_name = '../db/HPCG.db'
+    table_name = 'hpcg'
+    cores = config['core_count']
+    path_to_HPCG = config['path_to_HPCG']
+    path_to_HPCG_exe = os.path.expanduser(path_to_HPCG+"xhpcg")
+    try:
+        conn = connect(database_name)
+        if conn is None:
+            raise Exception("数据库连接失败")
+        result = HPCG_query(conn, table, cores, NX, NY, NZ)
+        # 如果查询结果为空，执行搜索程序，将新结果写入数据库
+        if len(result) == 0:
+            print(file_utils.write_to_HPCG_dat('hpcg.dat', new_param, cores))
+            date = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
+            # print("executing HPL...")
+            # close(conn)
+            # return
+            os.system(f"mpiexec.hydra -np {cores} {path_to_HPCG_exe} > ../logs/{date}.out 2> ../logs/{date}.err")
+            data = file_utils.parse_HPCG_txt(f"../logs/{date}.out")
+            # specify the output txt file name
+            store(conn, data, table_name)
+            result = data["Gflops"]
+        close(conn)
+        result = np.mean(result)
+        return result
+    except Exception as e:
+        print(f"获取数据时发生错误: {str(e)}")
+        traceback.print_exc()  
         return None

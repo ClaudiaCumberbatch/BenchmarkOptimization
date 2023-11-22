@@ -3,7 +3,7 @@ core_count: 4
 node_count: 1
 algorithm_preference: random_search # random_search, optuna
 iter_count: 1
-benchmark: HPL # HPL, HPCG
+benchmark: HPCG # HPL, HPCG
 
 # binary path
 # path_to_HPL: /home/jiayh_lab/cse12012138/HPL/hpl-2.3/bin/Linux_Intel64
@@ -26,7 +26,9 @@ U: [0, 1]
 EQUIL: [0, 1]
 
 # HPCG parameter range
-NX: [16, 256]
-NY: [16, 256]
-NZ: [16, 256]
+# the range of Nx, NY and NZ is the multiplier to 8
+# the actual range is [16, 256]
+NX: [2, 32]
+NY: [2, 32]
+NZ: [2, 32]
 Time: 1860

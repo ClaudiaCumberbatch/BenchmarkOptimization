@@ -45,16 +45,15 @@ def random_search_HPL(node_count, core_count, iter_count):
 
     
 def random_search_HPCG(node_count, core_count, iter_count):
-    # change the benchmark time
-    Time = 1860
-    # the bound of multiplier (both included)
-    lower_bound = 2
-    upper_bound = 32
+    param_ranges = get_HPCG_params()
+    best_param = {}
+    best_gflops = 0
     for _ in range(iter_count):
         # generate the multiplier to 8
-        NX = random.randint(lower_bound, upper_bound)
-        NY = random.randint(lower_bound, upper_bound)
-        NZ = random.randint(lower_bound, upper_bound)
+        random_params = {}
+        for param, param_range in param_ranges.items();
+            random_value = random.choice(param_range)
+        tempt_gflops = get_HPCG_
         random_params = {
             "NX": NX,
             "NY": NY,
