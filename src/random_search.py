@@ -49,7 +49,7 @@ def random_search_HPCG(node_count, core_count, iter_count):
     Time = 1860
     # the bound of multiplier (both included)
     lower_bound = 2
-    upper_bound = 30
+    upper_bound = 32
     for _ in range(iter_count):
         # generate the multiplier to 8
         NX = random.randint(lower_bound, upper_bound)

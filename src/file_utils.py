@@ -23,7 +23,7 @@ def write_to_HPL_dat(file_name, new_param, core_count):
     try:
         with open(file_name, 'w') as file:
             file.write("HPLinpack benchmark input file\n")
-            file.write("Innovative Computing Laboratory, University of Tennessee\n")
+            file.write("In  novative Computing Laboratory, University of Tennessee\n")
             file.write("{:<30} {}\n".format("HPL.out", "output file name (if any)"))
             file.write("{:<30} {}\n".format("6", "device out (6=stdout,7=stderr,file)"))
             file.write("{:<30} {}\n".format("1", "# of problems sizes (N)"))
@@ -142,10 +142,10 @@ def write_to_HPCG_dat(new_param, Time):
             file.write("Sandia National Laboratories; University of Tennessee, Knoxville\n")
             file.write(f"{new_param['NX']} {new_param['NY']} {new_param['NZ']}\n")
             file.write(Time)
-        return "File write successfully"
+        return "hpcg.dat write successfully"
     except Exception as e:
         traceback.print_exc()
-        return f"Error in file write: {str(e)}" 
+        return f"Error in hpcg.dat write: {str(e)}" 
 
 
 def parse_HPCG_txt(filename):

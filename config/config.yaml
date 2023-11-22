@@ -26,7 +26,7 @@ U: [0, 1]
 EQUIL: [0, 1]
 
 # HPCG parameter range
-NX: [2, 1000]
-NY: [2, 1000]
-NZ: [2, 1000]
+NX: [16, 256]
+NY: [16, 256]
+NZ: [16, 256]
 Time: 1860
