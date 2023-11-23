@@ -152,8 +152,8 @@ def parse_HPCG_txt(filename):
     # parse the output .txt file of HPCG
     # find the file name that is around the input filename
     # like filename = HPCG-Benchmark_3.1_2023-11-11_15-55-20.txt
-    # with open(filename, 'r') as file:
-    #     lines = file.readlines()
+    with open(filename, 'r') as file:
+        lines = file.readlines()
     
 
     NX_index = 15
