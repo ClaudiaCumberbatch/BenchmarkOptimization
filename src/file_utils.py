@@ -135,13 +135,13 @@ def parse_HPL_dat(filename):
     }  
     return param
 
-def write_to_HPCG_dat(new_param, Time):
+def write_to_HPCG_dat(file_name, new_param):
     try:
-        with open('hpcg.dat', 'w') as file:
+        with open(file_name, 'w') as file:
             file.write("HPCG benchmark input file\n")
             file.write("Sandia National Laboratories; University of Tennessee, Knoxville\n")
             file.write(f"{new_param['NX']} {new_param['NY']} {new_param['NZ']}\n")
-            file.write(Time)
+            file.write(f"{new_param['Time']}")
         return "hpcg.dat write successfully"
     except Exception as e:
         traceback.print_exc()
@@ -150,9 +150,11 @@ def write_to_HPCG_dat(new_param, Time):
 
 def parse_HPCG_txt(filename):
     # parse the output .txt file of HPCG
-
-    with open(filename, 'r') as file:
-        lines = file.readlines()
+    # find the file name that is around the input filename
+    # like filename = HPCG-Benchmark_3.1_2023-11-11_15-55-20.txt
+    # with open(filename, 'r') as file:
+    #     lines = file.readlines()
+    
 
     NX_index = 15
     NX = int(lines[NX_index].split("=")[1])
@@ -214,6 +216,7 @@ def get_HPCG_params():
     param_ranges = {
         "NX": config['NX'],
         "NY": config['NY'],
-        "NZ": config['NZ']
+        "NZ": config['NZ'],
+        "Time": config['Time']
     }
     return param_ranges

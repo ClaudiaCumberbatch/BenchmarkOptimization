@@ -49,18 +49,25 @@ def random_search_HPCG(node_count, core_count, iter_count):
     best_param = {}
     best_gflops = 0
     for _ in range(iter_count):
-        # generate the multiplier to 8
         random_params = {}
-        for param, param_range in param_ranges.items();
-            random_value = random.choice(param_range)
-        tempt_gflops = get_HPCG_
-        random_params = {
-            "NX": NX,
-            "NY": NY,
-            "NZ": NZ
-        }
-        res = write_to_HPCG_dat(random_params, Time)
-        print(res)
+        # for param, param_range in param_ranges.items():
+        #     if len(param_range) > 2:
+        #         random_value = random.choice(param_range)
+        #     else:
+        #         random_value = random.randint(param_range[0], param_range[1])
+        #     random_params[param] = random_value
+        # for param, param_range in param_ranges.items():
+        #     random_value = random.choice(param_range)
+        #     random_params[param] = random_value
+        random_params['NX'] = random.choice(param_ranges['NX'])
+        random_params['NY'] = random.choice(param_ranges['NY'])
+        random_params['NZ'] = random.choice(param_ranges['NZ'])
+        random_params['Time'] = param_ranges['Time']
+        tempt_gflops = get_HPCG_data(random_params)
+        if tempt_gflops > best_gflops:
+            best_gflops = tempt_gflops
+            best_param = random_params
+    return best_param, best_gflops
         
 
 

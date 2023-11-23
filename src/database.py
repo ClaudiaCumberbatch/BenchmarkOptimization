@@ -101,7 +101,7 @@ def HPL_query(conn, table, cores, PMAP, SWAP, L1, U, EQUIL, DEPTH, BCAST, RFACT,
         traceback.print_exc()
         return None
 
-def HPCG_query(conn, table, cores, NX, NT, NZ):
+def HPCG_query(conn, table, cores, NX, NY, NZ):
     try:
         cursor = conn.cursor()
         sql = f"SELECT Gflops FROM {table} WHERE cores={cores} AND NX={NX} AND NY={NY} AND NZ={NZ}"
@@ -167,17 +167,24 @@ def get_HPCG_data(new_param):
         conn = connect(database_name)
         if conn is None:
             raise Exception("数据库连接失败")
-        result = HPCG_query(conn, table, cores, NX, NY, NZ)
+        result = HPCG_query(conn, table_name, cores, new_param["NX"], new_param["NY"], new_param["NZ"])
         # 如果查询结果为空，执行搜索程序，将新结果写入数据库
         if len(result) == 0:
-            print(file_utils.write_to_HPCG_dat('hpcg.dat', new_param, cores))
-            date = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
+            print(file_utils.write_to_HPCG_dat('hpcg.dat', new_param))
+            date = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
             # print("executing HPL...")
             # close(conn)
             # return
-            os.system(f"mpiexec.hydra -np {cores} {path_to_HPCG_exe} > ../logs/{date}.out 2> ../logs/{date}.err")
-            data = file_utils.parse_HPCG_txt(f"../logs/{date}.out")
-            # specify the output txt file name
+            # os.system(f"mpiexec.hydra -np {cores} {path_to_HPCG_exe} > ../logs/{date}.out 2> ../logs/{date}.err" )
+            command = (
+                f"mpiexec.hydra -np {cores} {path_to_HPCG_exe} "
+                f"> ../logs/{date}.out 2> ../logs/{date}.err > ../logs/HPCG-Benchmark_{date}.txt"
+            )
+            # not necessary because the .out file cannot show the benchmark
+            # output file name: HPCG/hpcg/build/bin/HPCG-Benchmark_3.1_2023-11-11_15-55-20.txt result
+            os.system(command)
+            data = file_utils.parse_HPCG_txt(f"../logs/HPCG-Benchmark_{date}.txt")
+            # the time in the output txt file is the starting time 
             store(conn, data, table_name)
             result = data["Gflops"]
         close(conn)

@@ -3,7 +3,7 @@ from random_search import *
 import yaml
 from file_utils import *
 from output_utils import *
-from bayesian_optuna import *
+# from bayesian_optuna import *
 
 config = parse_config_yaml()
 
@@ -20,8 +20,8 @@ function_key = algorithm_preference + "_" + benchmark
 switcher = {
     "random_search_HPL": random_search_HPL,
     "random_search_HPCG": random_search_HPCG,
-    "optuna_HPL": optuna_HPL,
-    "optuna_HPCG": optuna_HPCG
+#    "optuna_HPL": optuna_HPL,
+#    "optuna_HPCG": optuna_HPCG
 }
 func = switcher.get(function_key, "Invalid choice of algorithm preference and benchmark")
 best_param, best_gflops = func(node_count, core_count, iter_count)
