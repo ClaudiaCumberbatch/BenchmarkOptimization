@@ -51,15 +51,15 @@ def random_search_HPCG(node_count, core_count, iter_count):
     for _ in range(iter_count):
         # generate the multiplier to 8
         random_params = {}
-        for param, param_range in param_ranges.items();
+        for param, param_range in param_ranges.items():
             random_value = random.choice(param_range)
-        tempt_gflops = get_HPCG_
+        tempt_gflops = get_HPCG_data(random_params)
         random_params = {
-            "NX": NX,
-            "NY": NY,
-            "NZ": NZ
+            "NX": random_params["NX"] * 8,
+            "NY": random_params["NY"] * 8,
+            "NZ": random_params["NZ"] * 8
         }
-        res = write_to_HPCG_dat(random_params, Time)
+        res = write_to_HPCG_dat(random_params, 1860)
         print(res)
         
 

@@ -101,7 +101,7 @@ def HPL_query(conn, table, cores, PMAP, SWAP, L1, U, EQUIL, DEPTH, BCAST, RFACT,
         traceback.print_exc()
         return None
 
-def HPCG_query(conn, table, cores, NX, NT, NZ):
+def HPCG_query(conn, table, cores, NX, NY, NZ):
     try:
         cursor = conn.cursor()
         sql = f"SELECT Gflops FROM {table} WHERE cores={cores} AND NX={NX} AND NY={NY} AND NZ={NZ}"
@@ -167,7 +167,7 @@ def get_HPCG_data(new_param):
         conn = connect(database_name)
         if conn is None:
             raise Exception("数据库连接失败")
-        result = HPCG_query(conn, table, cores, NX, NY, NZ)
+        result = HPCG_query(conn, table_name, cores, new_param["NX"], new_param["NY"], new_param["NZ"])
         # 如果查询结果为空，执行搜索程序，将新结果写入数据库
         if len(result) == 0:
             print(file_utils.write_to_HPCG_dat('hpcg.dat', new_param, cores))
