@@ -62,9 +62,14 @@ def random_search_HPCG(node_count, core_count, iter_count):
         random_params['NX'] = random.choice(param_ranges['NX'])
         random_params['NY'] = random.choice(param_ranges['NY'])
         random_params['NZ'] = random.choice(param_ranges['NZ'])
+        # 256 + 256 + 96 = 608
+        while(random_params['NX'] + random_params['NY'] + random_params['NZ'] > 608):
+            random_params['NX'] = random.choice(param_ranges['NX'])
+            random_params['NY'] = random.choice(param_ranges['NY'])
+            random_params['NZ'] = random.choice(param_ranges['NZ'])
         random_params['Time'] = param_ranges['Time']
         tempt_gflops = get_HPCG_data(random_params)
-        if tempt_gflops > best_gflops:
+        if tempt_gflops > best_gflops: 
             best_gflops = tempt_gflops
             best_param = random_params
     return best_param, best_gflops

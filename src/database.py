@@ -104,6 +104,10 @@ def HPL_query(conn, table, cores, PMAP, SWAP, L1, U, EQUIL, DEPTH, BCAST, RFACT,
 def HPCG_query(conn, table, cores, NX, NY, NZ):
     try:
         cursor = conn.cursor()
+        # print('get into HPCG_query')
+        # print(table, cores, NX, NY, NZ)
+        # print(f"SELECT Gflops FROM {table} WHERE cores={cores} AND NX={NX} AND NY={NY} AND NZ={NZ}")
+        # print message about the path of the db file
         sql = f"SELECT Gflops FROM {table} WHERE cores={cores} AND NX={NX} AND NY={NY} AND NZ={NZ}"
         cursor.execute(sql)
         result = cursor.fetchall()
@@ -157,6 +161,8 @@ def get_HPL_data(new_param):
         return None
 
 def get_HPCG_data(new_param):
+    # print('get into function get_HPCG_data')
+    # for test
     config = file_utils.parse_config_yaml()
     database_name = '../db/HPCG.db'
     table_name = 'hpcg'
@@ -169,26 +175,28 @@ def get_HPCG_data(new_param):
             raise Exception("数据库连接失败")
         result = HPCG_query(conn, table_name, cores, new_param["NX"], new_param["NY"], new_param["NZ"])
         # 如果查询结果为空，执行搜索程序，将新结果写入数据库
-        if len(result) == 0:
+        if len(result) == 0: # type: ignore
+            # print('did not find the result in the database')
             print(file_utils.write_to_HPCG_dat('hpcg.dat', new_param))
-            date = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-            # print("executing HPL...")
-            # close(conn)
-            # return
-            # os.system(f"mpiexec.hydra -np {cores} {path_to_HPCG_exe} > ../logs/{date}.out 2> ../logs/{date}.err" )
-            command = (
-                f"mpiexec.hydra -np {cores} {path_to_HPCG_exe} "
-                f"> ../logs/{date}.out 2> ../logs/{date}.err > ../logs/HPCG-Benchmark_{date}.txt"
-            )
+            date = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
+            os.system(f"mpiexec.hydra -np {cores} {path_to_HPCG_exe} > ../logs/{date}.out 2> ../logs/{date}.err" )
             # not necessary because the .out file cannot show the benchmark
-            # output file name: HPCG/hpcg/build/bin/HPCG-Benchmark_3.1_2023-11-11_15-55-20.txt result
-            os.system(command)
-            data = file_utils.parse_HPCG_txt(f"../logs/HPCG-Benchmark_{date}.txt")
-            # the time in the output txt file is the starting time 
+            # output file name is like:HPCG-Benchmark_3.1_2023-11-11_15-55-20.txt result
+            # the time in the output .txt file is the end time 
+            file_names = [file for file in os.listdir(".") if file.startswith("HPCG-Benchmark") and file.endswith(".txt")]
+            file_names.sort(reverse=True)
+            # As all hpcg output .txt files are sorted by descending order of time,
+            # the first file is the latest one
+            file_name = file_names[0]
+            data  = file_utils.parse_HPCG_txt(file_name)
             store(conn, data, table_name)
-            result = data["Gflops"]
+            result = data["Gflops"]       
         close(conn)
         result = np.mean(result)
+        # for test
+        if(result==None):
+            print('result is None')
+            result = 0
         return result
     except Exception as e:
         print(f"获取数据时发生错误: {str(e)}")

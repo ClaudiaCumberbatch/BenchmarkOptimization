@@ -154,8 +154,13 @@ def parse_HPCG_txt(filename):
     # like filename = HPCG-Benchmark_3.1_2023-11-11_15-55-20.txt
     with open(filename, 'r') as file:
         lines = file.readlines()
+        
+    PD_index = 11
+    # the index of the line Processor Dimensions::npx=
+    npx = int(lines[PD_index].split("=")[1])
+    npy = int(lines[PD_index + 1].split("=")[1])
+    npz = int(lines[PD_index + 2].split("=")[1])
     
-
     NX_index = 15
     NX = int(lines[NX_index].split("=")[1])
     NY = int(lines[NX_index + 1].split("=")[1])
@@ -166,9 +171,10 @@ def parse_HPCG_txt(filename):
 
     # the total benchmark time in sec
     Time_index = 89
-    Time = float(lines[Time_index].split("="[1])) 
+    Time = float(lines[Time_index].split("=")[1]) 
 
     param = {
+        "cores": npx * npy * npz,
         "NX": NX,
         "NY": NY,
         "NZ": NZ,
