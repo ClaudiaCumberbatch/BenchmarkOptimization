@@ -11,6 +11,7 @@ from optuna.visualization import plot_rank
 from optuna.visualization import plot_slice
 from optuna.visualization import plot_timeline
 import plotly.io as pio
+import plotly.graph_objects as go
 
 def HPL_objective(trial):  
     param_ranges = get_HPL_params()
@@ -49,11 +50,15 @@ def visualize(study, benchmark, iter_count):
     figure = plot_parallel_coordinate(study)
     pio.write_image(figure, f"../logs/parallel_coordinate_{benchmark}_{iter_count}_.png")
 
-    figure = plot_contour(study)
-    pio.write_image(figure, f"../logs/contour_{benchmark}_{iter_count}_.png")
+    param_names = list(study.best_params.keys())
+    for i in range(len(param_names)):
+        for j in range(i+1, len(param_names)):
+            figure = plot_contour(study, params=[param_names[i], param_names[j]])
+            pio.write_image(figure, f"../logs/contour_{benchmark}_{iter_count}_fig{i}_{j}.png")
 
-    figure = plot_slice(study)
-    pio.write_image(figure, f"../logs/slice_{benchmark}_{iter_count}_.png")
+    for i in range(len(param_names)):
+            figure = plot_slice(study, params=[param_names[i]])
+            pio.write_image(figure, f"../logs/slice_{benchmark}_{iter_count}_fig{i}.png")
 
     figure = plot_param_importances(study)
     pio.write_image(figure, f"../logs/param_importances_{benchmark}_{iter_count}_.png")
@@ -66,8 +71,10 @@ def visualize(study, benchmark, iter_count):
     figure = plot_edf(study)
     pio.write_image(figure, f"../logs/edf_{benchmark}_{iter_count}_.png")
 
-    figure = plot_rank(study)
-    pio.write_image(figure, f"../logs/rank_{benchmark}_{iter_count}_.png")
+    for i in range(len(param_names)):
+        for j in range(i+1, len(param_names)):
+            figure = plot_rank(study, params=[param_names[i], param_names[j]])
+            pio.write_image(figure, f"../logs/rank_{benchmark}_{iter_count}_fig{i}_{j}.png")
 
     figure = plot_timeline(study)
     pio.write_image(figure, f"../logs/timeline_{benchmark}_{iter_count}_.png")
