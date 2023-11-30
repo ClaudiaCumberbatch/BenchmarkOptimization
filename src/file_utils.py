@@ -1,3 +1,4 @@
+from calendar import c
 import traceback
 import yaml
 
@@ -195,6 +196,14 @@ def parse_config_yaml():
             factors.append(i)
     config['Q'] = factors
     
+    # get HPCG NX NY NZ range
+    N = []
+    for i in range(config['N'][0], config['N'][1] + 1):
+        if i % 8 == 0:
+            N.append(i)
+    config['NX'] = N
+    config['NY'] = N
+    config['NZ'] = N
     return config
 
 def get_HPL_params():

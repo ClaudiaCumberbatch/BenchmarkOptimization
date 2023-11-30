@@ -47,8 +47,8 @@ def random_search_HPL(node_count, core_count, iter_count):
 def random_search_HPCG(node_count, core_count, iter_count):
     param_ranges = get_HPCG_params()
     best_param = {}
-    best_gflops = 0
-    for _ in range(iter_count):
+    best_gflops = 0.0
+    for i in range(iter_count):
         random_params = {}
         # for param, param_range in param_ranges.items():
         #     if len(param_range) > 2:
@@ -59,19 +59,35 @@ def random_search_HPCG(node_count, core_count, iter_count):
         # for param, param_range in param_ranges.items():
         #     random_value = random.choice(param_range)
         #     random_params[param] = random_value
+        
         random_params['NX'] = random.choice(param_ranges['NX'])
         random_params['NY'] = random.choice(param_ranges['NY'])
         random_params['NZ'] = random.choice(param_ranges['NZ'])
+        # random_params['NX'] = 32
+        # random_params['NY'] = 16
+        # random_params['NZ'] = 32
+        
+        # random_params['NX'] = random.randint(param_ranges['NX'][0], param_ranges['NX'][1])
+        # random_params['NY'] = random.randint(param_ranges['NY'][0], param_ranges['NY'][1])
+        # random_params['NZ'] = random.randint(param_ranges['NZ'][0], param_ranges['NZ'][1])
+        
+        
         # 256 + 256 + 96 = 608
-        while(random_params['NX'] + random_params['NY'] + random_params['NZ'] > 608):
-            random_params['NX'] = random.choice(param_ranges['NX'])
-            random_params['NY'] = random.choice(param_ranges['NY'])
-            random_params['NZ'] = random.choice(param_ranges['NZ'])
+        # while(random_params['NX'] + random_params['NY'] + random_params['NZ'] > 608):
+        #     random_params['NX'] = random.choice(param_ranges['NX'])
+        #     random_params['NY'] = random.choice(param_ranges['NY'])
+        #     random_params['NZ'] = random.choice(param_ranges['NZ'])
         random_params['Time'] = param_ranges['Time']
+        print(f"params of the {i+1} th iteration: ")
+        print(random_params)
         tempt_gflops = get_HPCG_data(random_params)
+        print(f"Gflops of this iteration: {tempt_gflops}")
         if tempt_gflops > best_gflops: 
             best_gflops = tempt_gflops
             best_param = random_params
+        print(f"The currnet best Gflops:  {best_gflops}")
+        print(f"The currnet best params:  {best_param}")
+        print()
     return best_param, best_gflops
         
 

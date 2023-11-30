@@ -180,23 +180,98 @@ def get_HPCG_data(new_param):
             print(file_utils.write_to_HPCG_dat('hpcg.dat', new_param))
             date = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
             os.system(f"mpiexec.hydra -np {cores} {path_to_HPCG_exe} > ../logs/{date}.out 2> ../logs/{date}.err" )
+            out_file_path = f"../logs/{date}.out"
+            err_file_path = f"../logs/{date}.err"
             # not necessary because the .out file cannot show the benchmark
-            # output file name is like:HPCG-Benchmark_3.1_2023-11-11_15-55-20.txt result
+            # HPCG output file name is like: HPCG-Benchmark_3.1_2023-11-11_15-55-20.txt result
             # the time in the output .txt file is the end time 
-            file_names = [file for file in os.listdir(".") if file.startswith("HPCG-Benchmark") and file.endswith(".txt")]
-            file_names.sort(reverse=True)
+            HPCG_file_names = [file for file in os.listdir(".") if file.startswith("HPCG-Benchmark") and file.endswith(".txt")]
+            HPCG_file_names.sort(reverse=True)
             # As all hpcg output .txt files are sorted by descending order of time,
             # the first file is the latest one
-            file_name = file_names[0]
-            data  = file_utils.parse_HPCG_txt(file_name)
+            HPCG_file_name = HPCG_file_names[0]
+            if os.path.getsize(out_file_path) == 0 and os.path.getsize(err_file_path) == 0:
+                print("HPCG runs successfully")
+                data  = file_utils.parse_HPCG_txt(HPCG_file_name)
+            elif os.path.getsize(out_file_path) != 0:
+                print("HPCG failed to run: problem sizes out of range")
+                data = {
+                    "cores": cores,
+                    "NX": new_param["NX"],
+                    "NY": new_param["NY"],
+                    "NZ": new_param["NZ"],
+                    "Time": new_param["Time"],
+                    "Gflops": -1
+                }
+            else:
+                print("HPCG failed to run: invalid params")
+                data = {
+                    "cores": cores,
+                    "NX": new_param["NX"],
+                    "NY": new_param["NY"],
+                    "NZ": new_param["NZ"],
+                    "Time": new_param["Time"],
+                    "Gflops": -1
+                }
+            
+            
+            # hpcg output file name is like: hpcg20231126T023554.txt
+            # hpcg_file_names = [file for file in os.listdir(".") if file.startswith("hpcg") and file.endswith(".txt")]
+            # hpcg_file_names.sort(reverse=True)
+            # hpcg_file_name = hpcg_file_names[0]
+            # with open(hpcg_file_name, 'r') as file:
+            #     first_line = file.readline()
+            # If the first line of the hpcg output file is empty or invalid, it means that the benchmark failed
+            # hpcg file of invalid params is like (the below 2 lines):
+            # The local problem sizes (16,232,176) are invalid because the ratio min(x,y,z)/max(x,y,z)=0.0689655 is too small (at least 0.125 is required).
+            # The shape should resemble a 3D cube. Please adjust and try again.
+            # if first_line == "" :
+            #     print("HPCG failed to run: problem sizes out of range")
+            #     data = {
+            #         "cores": cores,
+            #         "NX": new_param["NX"],
+            #         "NY": new_param["NY"],
+            #         "NZ": new_param["NZ"],
+            #         "Time": new_param["Time"],
+            #         "Gflops": -1
+            #     }
+            # elif "invalid" in first_line:
+            #     print("HPCG failed to run: invalid params")
+            #     data = {
+            #         "cores": cores,
+            #         "NX": new_param["NX"],
+            #         "NY": new_param["NY"],
+            #         "NZ": new_param["NZ"],
+            #         "Time": new_param["Time"],
+            #         "Gflops": -1
+            #     }
+            # else:
+            #     data  = file_utils.parse_HPCG_txt(HPCG_file_name)
+                
+                
+            # check if the file name is generated in this iteration
+            # if not, it means that it was generated before, and the params in this iteration are not valid, write gflops=-1 into the database
+            # time_string = file_name.split("_")[2] + "_" + file_name.split("_")[3].split(".")[0]
+            # file_time = datetime.strptime(time_string, "%Y-%m-%d_%H-%M-%S")
+            # current_time = datetime.now()
+            # time_difference = current_time - file_time
+            # # if dif is less than 10 minutes, valid
+            # if time_difference.seconds < 600:
+            #     data  = file_utils.parse_HPCG_txt(file_name)
+            # else:
+            #     print("invalid params")
+            #     data = {
+            #         "cores": cores,
+            #         "NX": new_param["NX"],
+            #         "NY": new_param["NY"],
+            #         "NZ": new_param["NZ"],
+            #         "Time": new_param["Time"],
+            #         "Gflops": -1
+            #     }
             store(conn, data, table_name)
             result = data["Gflops"]       
         close(conn)
         result = np.mean(result)
-        # for test
-        if(result==None):
-            print('result is None')
-            result = 0
         return result
     except Exception as e:
         print(f"获取数据时发生错误: {str(e)}")
