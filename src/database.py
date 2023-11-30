@@ -180,19 +180,20 @@ def get_HPCG_data(new_param):
             os.system(f"mpiexec.hydra -np {cores} {path_to_HPCG_exe} > ../logs/{date}.out 2> ../logs/{date}.err" )
             out_file_path = f"../logs/{date}.out"
             err_file_path = f"../logs/{date}.err"
-            # HPCG output file name is like: HPCG-Benchmark_3.1_2023-11-11_15-55-20.txt result
-            # the time in the output .txt file is the end time 
-            HPCG_file_names = [file for file in os.listdir(".") if file.startswith("HPCG-Benchmark") and file.endswith(".txt")]
-            HPCG_file_names.sort(reverse=True)
-            # As all HPCG output .txt files are sorted by descending order of time,
-            # the first file is the latest one
-            HPCG_file_name = HPCG_file_names[0]
+            
             # check if HPCG runs successfully
             # If params out of range, the .out file will not be empty
             # If the params are invalid, that is the ratio of min(NX, NY, NZ) to max(NX, NY, NZ) is less than 1/8,
             # the .err file will not be empty
             if os.path.getsize(out_file_path) == 0 and os.path.getsize(err_file_path) == 0:
                 print("HPCG runs successfully")
+                # HPCG output file name is like: HPCG-Benchmark_3.1_2023-11-11_15-55-20.txt result
+                # the time in the output .txt file is the end time 
+                HPCG_file_names = [file for file in os.listdir(".") if file.startswith("HPCG-Benchmark") and file.endswith(".txt")]
+                HPCG_file_names.sort(reverse=True)
+                # As all HPCG output .txt files are sorted by descending order of time,
+                # the first file is the latest one
+                HPCG_file_name = HPCG_file_names[0]
                 data = file_utils.parse_HPCG_txt(HPCG_file_name)
             elif os.path.getsize(out_file_path) != 0:
                 print("HPCG failed to run: problem sizes out of range")
