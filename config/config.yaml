@@ -1,18 +1,18 @@
 # hardware configuration and algorithm configuration
-core_count: 24
+core_count: 40
 node_count: 1
-algorithm_preference: random_search # random_search, optuna
-iter_count: 1
-benchmark: HPCG # HPL, HPCG
+algorithm_preference: optuna # random_search, optuna
+iter_count: 100
+benchmark: HPL # HPL, HPCG
 
 # binary path
 # path_to_HPL: /home/jiayh_lab/cse12012138/HPL/hpl-2.3/bin/Linux_Intel64
-path_to_HPL: ~/hpl/hpl-2.3/bin/Linux_Intel64/
+path_to_HPL: ~/HPL/hpl-2.3/bin/Linux_Intel64/
 path_to_HPCG: ~/HPCG/hpcg/build/bin/
 
 # HPL parameter range
-N: [10, 100000]
-NB: [10, 1000]
+N: [80000, 150000]
+NB: [200, 700]
 PMAP: [0, 1]
 PFACT: [0, 2]
 NBMIN: [2, 50]
