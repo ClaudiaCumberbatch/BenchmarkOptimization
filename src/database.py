@@ -130,7 +130,7 @@ def close(conn):
 
 # 和数据库交互的全流程
 def get_HPL_data(new_param):
-    config = file_utils.parse_config_yaml()
+    config = file_utils.config
     database_name = '../db/HPL.db'
     table_name = 'table1'
     cores = config['core_count']
@@ -161,7 +161,7 @@ def get_HPL_data(new_param):
         return None
 
 def get_HPCG_data(new_param):
-    config = file_utils.parse_config_yaml()
+    config = file_utils.config
     database_name = '../db/HPCG.db'
     table_name = 'hpcg'
     cores = config['core_count']

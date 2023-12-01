@@ -182,11 +182,9 @@ def parse_HPCG_txt(filename):
     return param
 
 config = {}
-def parse_config_yaml():
+def parse_config_yaml(filepath):
     global config
-    if len(config) != 0:
-        return config
-    with open('../config/config.yaml', 'r') as file:
+    with open(filepath, 'r') as file:
         config = yaml.safe_load(file)
     # 定义P、Q范围
     factors = []
@@ -215,7 +213,6 @@ def parse_config_yaml():
     return config
 
 def get_HPL_params():
-    config = parse_config_yaml()
     param_ranges = {
         "N": config['N'],
         "NB": config['NB'],
@@ -235,7 +232,6 @@ def get_HPL_params():
     return param_ranges
 
 def get_HPCG_params():
-    config = parse_config_yaml()
     param_ranges = {
         "NX": config['NX'],
         "NY": config['NY'],

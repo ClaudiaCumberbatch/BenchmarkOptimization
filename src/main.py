@@ -6,7 +6,13 @@ from output_utils import *
 from bayesian_optuna import *
 import time
 
-config = parse_config_yaml()
+parser = argparse.ArgumentParser(description="specify the config file")
+parser.add_argument("-f", type=str, default="../config/config.yaml", help="config file")
+args = parser.parse_args()
+config_filepath = args.f
+
+config = parse_config_yaml(config_filepath)
+print(config)
 
 # 现在，config是一个包含配置的字典
 core_count = config['core_count']
