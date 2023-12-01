@@ -197,13 +197,21 @@ def parse_config_yaml():
     config['Q'] = factors
     
     # get HPCG NX NY NZ range
-    N = []
-    for i in range(config['N'][0], config['N'][1] + 1):
+    NX = []
+    for i in range(config['NX'][0], config['NX'][1] + 1):
         if i % 8 == 0:
-            N.append(i)
-    config['NX'] = N
-    config['NY'] = N
-    config['NZ'] = N
+            NX.append(i)
+    config['NX'] = NX
+    NY = []
+    for i in range(config['NY'][0], config['NY'][1] + 1):
+        if i % 8 == 0:
+            NY.append(i)
+    config['NY'] = NY
+    NZ = []
+    for i in range(config['NZ'][0], config['NZ'][1] + 1):
+        if i % 8 == 0:
+            NZ.append(i)
+    config['NZ'] = NZ
     return config
 
 def get_HPL_params():
