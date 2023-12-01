@@ -27,8 +27,12 @@ def HPL_objective(trial):
 def HPCG_objective(trial):
     param_ranges = get_HPCG_params()
     param_values = {}
-    for param, param_range in param_ranges.items():
-        param_values[param] = trial.suggest_categorical(param, param_range)
+    param_values['NX'] = trial.suggest_categorical('NX', param_ranges['NX'])
+    param_values['NY'] = trial.suggest_categorical('NY', param_ranges['NY'])
+    param_values['NZ'] = trial.suggest_categorical('NZ', param_ranges['NZ'])
+    param_values['Time'] = param_ranges['Time']
+    Gflops = get_HPCG_data(param_values)
+    return Gflops
     
 
 def optuna_HPL(node_count, core_count, iter_count):
