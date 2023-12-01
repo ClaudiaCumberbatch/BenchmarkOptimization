@@ -181,8 +181,11 @@ def parse_HPCG_txt(filename):
     }
     return param
 
-    
+config = {}
 def parse_config_yaml():
+    global config
+    if len(config) != 0:
+        return config
     with open('../config/config.yaml', 'r') as file:
         config = yaml.safe_load(file)
     # 定义P、Q范围

@@ -1,4 +1,4 @@
-import config
+from file_utils import *
 
 def output(iter_count, param, Gflops, time, function_key):
     print("Algorithm and benchmark:", function_key)
@@ -8,7 +8,8 @@ def output(iter_count, param, Gflops, time, function_key):
         print("{:<10} : {}".format(key, value))
     print("The best Gflops is: ", Gflops)
     print("The total duration is ", time, "s")
+    print("\n\n------------------\n\n")
     print("The config file content is: ")
-    config_param = config.parse_config_yaml()
-    for key, value in config.items():
+    config_param = parse_config_yaml()
+    for key, value in config_param.items():
         print("{:<10} : {}".format(key, value))
