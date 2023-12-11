@@ -132,7 +132,7 @@ def close(conn):
 def get_HPL_data(new_param):
     config = file_utils.config
     database_name = '../db/HPL.db'
-    table_name = 'table1'
+    table_name = config['queue']
     cores = config['core_count']
     path_to_HPL = config['path_to_HPL']
     path_to_HPL_exe = os.path.expanduser(path_to_HPL + "xhpl")
@@ -163,7 +163,7 @@ def get_HPL_data(new_param):
 def get_HPCG_data(new_param):
     config = file_utils.config
     database_name = '../db/HPCG.db'
-    table_name = 'hpcg'
+    table_name = config['queue']
     cores = config['core_count']
     path_to_HPCG = config['path_to_HPCG']
     path_to_HPCG_exe = os.path.expanduser(path_to_HPCG+"xhpcg")

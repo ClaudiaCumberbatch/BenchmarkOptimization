@@ -37,6 +37,24 @@ def HPCG_objective(trial):
 
 def optuna_HPL(node_count, core_count, iter_count):
     study = optuna.create_study(direction='maximize')
+    study.enqueue_trial(
+        {
+            "PMAP": 0,
+            "SWAP": 0,
+            "L1": 0,
+            "U": 0,
+            "EQUIL": 0,
+            "DEPTH": 6,
+            "BCAST": 4,
+            "RFACT": 0,
+            "NDIV": 8,
+            "PFACT": 0,
+            "NBMIN": 12,
+            "N": 120000,
+            "NB": 300,
+            "Q": 10
+        }
+    )
     study.optimize(HPL_objective, n_trials=iter_count)
     visualize(study, "HPL", iter_count)
     return study.best_params, study.best_value
