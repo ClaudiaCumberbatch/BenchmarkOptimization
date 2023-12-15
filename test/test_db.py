@@ -23,5 +23,8 @@ def get_param():
 if __name__ == "__main__":
     param = get_param()
     print(param)
-    res = get_HPL_data(param)
+    config = parse_config_yaml("../config/config.yaml")
+    print(config)
+    hpl_int = HPL_interactor()
+    res = hpl_int.get_data(param)
     print(res)

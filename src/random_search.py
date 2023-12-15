@@ -3,6 +3,8 @@ import random
 from database import *
 
 def random_search_HPL(node_count, core_count, iter_count):
+    # 新建数据库交互对象
+    hpl_interactor = HPL_interactor()
     # 定义参数范围
     '''
     factors = []
@@ -37,7 +39,7 @@ def random_search_HPL(node_count, core_count, iter_count):
             else:
                 random_value = random.randint(param_range[0], param_range[1])
             random_params[param] = random_value
-        tempt_gflops = get_HPL_data(random_params)
+        tempt_gflops = hpl_interactor.get_data(random_params)
         if tempt_gflops > best_gflops:
             best_gflops = tempt_gflops
             best_param = random_params
@@ -45,6 +47,7 @@ def random_search_HPL(node_count, core_count, iter_count):
 
     
 def random_search_HPCG(node_count, core_count, iter_count):
+    hpcg_interactor = HPCG_interactor()
     param_ranges = get_HPCG_params()
     best_param = {}
     best_gflops = 0.0
@@ -56,7 +59,7 @@ def random_search_HPCG(node_count, core_count, iter_count):
         random_params['Time'] = param_ranges['Time']
         print(f"params of the {i+1} th iteration: ")
         print(random_params)
-        tempt_gflops = get_HPCG_data(random_params)
+        tempt_gflops = hpcg_interactor.get_data(random_params)
         print(f"Gflops of this iteration: {tempt_gflops}")
         if tempt_gflops > best_gflops: 
             best_gflops = tempt_gflops

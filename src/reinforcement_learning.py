@@ -6,6 +6,10 @@ import numpy as np
 from stable_baselines3 import PPO
 from stable_baselines3.common.policies import ActorCriticPolicy
 
+from stable_baselines3 import DDPG
+from stable_baselines3.common.noise import NormalActionNoise
+
+
 '''
 定义学习环境
 状态空间 = 超参数组合+当前性能指标
@@ -56,8 +60,11 @@ class HPLEnv(gym.Env):
         # 根据动作更新超参数
         # print('action:', action)
         # reward = get_HPL_data(self.list2dic(action))
-        # reward = np.random.rand()
-        reward = np.sum(action)
+        reward = -np.sum(action)+5000
+        # if (np.random.rand() < 0.5):
+        #     reward = -np.sum(action)
+        # else:
+        #     reward = np.sum(action)
         self.current_state = action
         return self.current_state, reward, False, {}
     
@@ -71,24 +78,51 @@ class HPLEnv(gym.Env):
 if __name__ == '__main__':
     # Create the environment
     env = HPLEnv()
-    
+    '''
     # PPO智能体
-    agent = PPO(ActorCriticPolicy, env, verbose=1)
+    agent = PPO(ActorCriticPolicy, env, verbose=1, clip_range=0.9)
 
     # 训练智能体
-    for episode in range(10000):
+    for episode in range(10):
         observation = env.reset()
+        print(f"Episode: {episode}, Initial state: {observation}")
         total_reward = 0
         for step in range(100):
             action, _ = agent.predict(observation)
             action = np.array(action, dtype=int)
+            print(f"Step: {step}, State: {env.current_state}")
+            print(f"Step: {step}, Action: {action}")
             observation, reward, done, info = env.step(action)
             total_reward += reward
             if done:
                 break
-        if (episode+1) % 100 == 0:
-            print(f"Episode: {episode}, Total reward: {total_reward}, Last state: {observation}")
+        # if (episode+1) % 100 == 0:
+        print(f"Episode: {episode}, Total reward: {total_reward}, Last state: {observation}")
     
     # 训练结束后，保存智能体
     agent.save("ppo_agent.pkl")
+    '''
+
+    # 创建动作噪声
+    n_actions = env.action_space.shape[-1]
+    action_noise = NormalActionNoise(mean=np.zeros(n_actions), sigma=0.1 * np.ones(n_actions))
+
+    # 创建DDPG智能体
+    agent = DDPG('MlpPolicy', env, action_noise=action_noise, verbose=1)
+
+    # 训练智能体
+    for episode in range(10):
+        observation = env.reset()
+        print(f"Episode: {episode}, Initial state: {observation}")
+        total_reward = 0
+        for step in range(100):
+            action, _ = agent.predict(observation)
+            action = np.array(action, dtype=int)
+            print(f"Step: {step}, State: {env.current_state}")
+            print(f"Step: {step}, Action: {action}")
+            observation, reward, done, info = env.step(action)
+            total_reward += reward
+            if done:
+                break
+        print(f"Episode: {episode}, Total reward: {total_reward}, Last state: {observation}")
     
