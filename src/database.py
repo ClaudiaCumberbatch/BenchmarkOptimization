@@ -65,6 +65,7 @@ class database_interactor(ABC):
         self.path_to_HPL_exe = os.path.expanduser(path_to_HPL + "xhpl")
         path_to_HPCG = config['path_to_HPCG']
         self.path_to_HPCG_exe = os.path.expanduser(path_to_HPCG + "xhpcg")
+        self.mpi = config['mpi']
 
     def __del__(self):
         self.close()
@@ -170,7 +171,7 @@ class HPL_interactor(database_interactor):
             if len(result) == 0:
                 print(file_utils.write_to_HPL_dat('HPL.dat', new_param, self.cores))
                 date = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
-                os.system(f"mpiexec.hydra -np {self.cores} {self.path_to_HPL_exe} > ../logs/{date}.out 2> ../logs/{date}.err")
+                os.system(f"{self.mpi} -np {self.cores} {self.path_to_HPL_exe} > ../logs/{date}.out 2> ../logs/{date}.err")
                 data = file_utils.parse_HPL_dat(f"../logs/{date}.out")
                 self.store(data)
                 result = data["Gflops"]
@@ -223,7 +224,7 @@ class HPCG_interactor(database_interactor):
                 # print('did not find the result in the database')
                 print(file_utils.write_to_HPCG_dat('hpcg.dat', new_param))
                 date = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
-                os.system(f"mpiexec.hydra -np {self.cores} {self.path_to_HPCG_exe} > ../logs/{date}.out 2> ../logs/{date}.err" )
+                os.system(f"{self.mpi} -np {self.cores} {self.path_to_HPCG_exe} > ../logs/{date}.out 2> ../logs/{date}.err" )
                 out_file_path = f"../logs/{date}.out"
                 err_file_path = f"../logs/{date}.err"
                 

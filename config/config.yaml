@@ -6,6 +6,9 @@ algorithm_preference: random_search # random_search, optuna
 iter_count: 2
 benchmark: HPL # HPL, HPCG
 
+# MPI command
+mpi: mpiexec.hydra
+
 # binary path
 path_to_HPL: ~/HPL/hpl-2.3/bin/Linux_Intel64/
 path_to_HPCG: ~/HPCG/hpcg/build/bin/
