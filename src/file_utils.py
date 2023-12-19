@@ -192,24 +192,8 @@ def parse_config_yaml(filepath):
     for i in range(1, core_count + 1):
         if core_count % i == 0:
             factors.append(i)
-    config['Q'] = factors
+    config['Q'] = {'range': factors, "type": "categorical"}
     
-    # get HPCG NX NY NZ range
-    NX = []
-    for i in range(config['NX'][0], config['NX'][1] + 1):
-        if i % 8 == 0:
-            NX.append(i)
-    config['NX'] = NX
-    NY = []
-    for i in range(config['NY'][0], config['NY'][1] + 1):
-        if i % 8 == 0:
-            NY.append(i)
-    config['NY'] = NY
-    NZ = []
-    for i in range(config['NZ'][0], config['NZ'][1] + 1):
-        if i % 8 == 0:
-            NZ.append(i)
-    config['NZ'] = NZ
     return config
 
 def get_HPL_params():

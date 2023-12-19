@@ -7,26 +7,68 @@ iter_count: 2
 benchmark: HPL # HPL, HPCG
 
 # binary path
-path_to_HPL: ~/hpl/hpl-2.3/bin/Linux_Intel64/
+path_to_HPL: ~/HPL/hpl-2.3/bin/Linux_Intel64/
 path_to_HPCG: ~/HPCG/hpcg/build/bin/
 
 # HPL parameter range
-N: [80000, 150000]
-NB: [200, 700]
-PMAP: [0, 1]
-PFACT: [0, 2]
-NBMIN: [2, 50]
-NDIV: [2, 10]
-RFACT: [0, 2]
-BCAST: [0, 5]
-DEPTH: [0, 6]
-SWAP: [0, 2]
-L1: [0, 1]
-U: [0, 1]
-EQUIL: [0, 1]
+N: 
+  range: [80000, 150000]
+  step: 1
+  type: int
+NB: 
+  range: [200, 700]
+  step: 1
+  type: int
+PMAP: 
+  range: [0, 1]
+  type: categorical
+PFACT: 
+  range: [0, 1, 2]
+  type: categorical
+NBMIN: 
+  range: [2, 50]
+  step: 1
+  type: int
+NDIV: 
+  range: [2, 10]
+  step: 1
+  type: int
+RFACT: 
+  range: [0, 1, 2]
+  type: categorical
+BCAST: 
+  range: [0, 1, 2, 3, 4, 5]
+  type: categorical
+DEPTH: 
+  range: [0, 6]
+  step: 1
+  type: int
+SWAP: 
+  range: [0, 1, 2]
+  type: categorical
+L1: 
+  range: [0, 1]
+  type: categorical
+U: 
+  range: [0, 1]
+  type: categorical
+EQUIL: 
+  range: [0, 1]
+  type: categorical
 
 # HPCG parameter range(both side of the bundary is included)
-NX: [16, 256]
-NY: [16, 256]
-NZ: [16, 256]
-Time: 1860
+NX: 
+  range: [16, 256]
+  step: 8
+  type: int
+NY: 
+  range: [16, 256]
+  step: 8
+  type: int
+NZ: 
+  range: [16, 256]
+  step: 8
+  type: int
+Time: 
+  range: [1860, 1860]
+  type: int

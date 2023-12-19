@@ -64,7 +64,7 @@ class database_interactor(ABC):
         path_to_HPL = config['path_to_HPL']
         self.path_to_HPL_exe = os.path.expanduser(path_to_HPL + "xhpl")
         path_to_HPCG = config['path_to_HPCG']
-        self.path_to_GPCG_exe = os.path.expanduser(path_to_HPCG + "xhpcg")
+        self.path_to_HPCG_exe = os.path.expanduser(path_to_HPCG + "xhpcg")
 
     def __del__(self):
         self.close()
@@ -205,7 +205,7 @@ class HPCG_interactor(database_interactor):
             NX = param_list[0]
             NY = param_list[1]
             NZ = param_list[2]
-            sql = f"SELECT Gflops FROM {self.table} WHERE cores={self.cores} AND NX={NX} AND NY={NY} AND NZ={NZ}"
+            sql = f"SELECT Gflops FROM {self.table_name} WHERE cores={self.cores} AND NX={NX} AND NY={NY} AND NZ={NZ}"
             cursor.execute(sql)
             result = cursor.fetchall()
             return result
@@ -216,7 +216,8 @@ class HPCG_interactor(database_interactor):
         
     def get_data(self, new_param):
         try:
-            result = self.query(new_param)
+            param_list = [new_param['NX'], new_param['NY'], new_param['NZ'], new_param['Time']]
+            result = self.query(param_list)
             # 如果查询结果为空，执行搜索程序，将新结果写入数据库
             if len(result) == 0: # type: ignore
                 # print('did not find the result in the database')
