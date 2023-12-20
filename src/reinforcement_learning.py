@@ -1,11 +1,10 @@
 from file_utils import *
 from database import *
+from optimizer import Optimizer
+
 import gym
 from gym import spaces
 import numpy as np
-from stable_baselines3 import PPO
-from stable_baselines3.common.policies import ActorCriticPolicy
-
 from stable_baselines3 import DDPG
 from stable_baselines3.common.noise import NormalActionNoise
 
@@ -15,24 +14,29 @@ from stable_baselines3.common.noise import NormalActionNoise
 状态空间 = 超参数组合+当前性能指标
 动作空间 = 超参数组合
 '''
-class HPLEnv(gym.Env):
+class SearchEnv(gym.Env):
     
-    def __init__(self):
+    def __init__(self, database_interactor):
         # 定义参数范围
-        param_ranges = get_HPL_params()
-        param_ranges['Q'] = [min(param_ranges['Q']), max(param_ranges['Q'])] # 应为factor
-        super(HPLEnv, self).__init__()
+        if (database_interactor.name == 'HPL'):
+            param_ranges = get_HPL_params()
+        else:
+            param_ranges = get_HPCG_params()
+        super(SearchEnv, self).__init__()
         self.hyperparameter_ranges = param_ranges
         self.current_hyperparameters = {}
+        self.database_interactor = database_interactor
+
+        print(param_ranges)
 
          # 定义状态空间
-        self.observation_space = spaces.Box(low=np.array([param_ranges[param][0] for param in param_ranges]),
-                                           high=np.array([param_ranges[param][1] for param in param_ranges]),
+        self.observation_space = spaces.Box(low=np.array([param_ranges[param]['range'][0] for param in param_ranges]),
+                                           high=np.array([param_ranges[param]['range'][1] for param in param_ranges]),
                                            dtype=np.int32)
 
         # 定义动作空间
-        self.action_space = spaces.Box(low=np.array([param_ranges[param][0] for param in param_ranges]),
-                                        high=np.array([param_ranges[param][1] for param in param_ranges]),
+        self.action_space = spaces.Box(low=np.array([param_ranges[param]['range'][0] for param in param_ranges]),
+                                        high=np.array([param_ranges[param]['range'][1] for param in param_ranges]),
                                         dtype=np.int32)
 
         self.current_state = self.generate_random_params(param_ranges)
@@ -40,7 +44,9 @@ class HPLEnv(gym.Env):
     # 生成随机初始参数
     def generate_random_params(self, param_ranges):
         random_params = []
-        for param, (min_val, max_val) in param_ranges.items():
+        for param in param_ranges.items():
+            min_val = param[1]['range'][0]
+            max_val = param[1]['range'][1]
             if min_val == max_val:
                 random_val = min_val
             else:
@@ -59,8 +65,8 @@ class HPLEnv(gym.Env):
     def step(self, action):
         # 根据动作更新超参数
         # print('action:', action)
-        # reward = get_HPL_data(self.list2dic(action))
-        reward = -np.sum(action)+5000
+        reward = self.database_interactor.get_data(self.list2dic(action))
+        # reward = np.sum(action)-action[0]-action[1]
         # if (np.random.rand() < 0.5):
         #     reward = -np.sum(action)
         # else:
@@ -74,55 +80,38 @@ class HPLEnv(gym.Env):
         # 返回初始观察
         return self.current_state
 
+class RLOptimizer(Optimizer):
+    def __init__(self, database_interactor: database_interactor, iter_count: int, config_param: dict, benchmark: str):
+        super().__init__(database_interactor, iter_count, config_param, benchmark)
+        self.name = "RL"
+        self.env = SearchEnv(database_interactor)
+        # 创建动作噪声
+        n_actions = self.env.action_space.shape[-1]
+        self.action_noise = NormalActionNoise(mean=np.zeros(n_actions), sigma=0.1 * np.ones(n_actions))
+        # 创建DDPG智能体
+        self.agent = DDPG('MlpPolicy', self.env, action_noise=self.action_noise, verbose=1)
 
-if __name__ == '__main__':
-    # Create the environment
-    env = HPLEnv()
-    '''
-    # PPO智能体
-    agent = PPO(ActorCriticPolicy, env, verbose=1, clip_range=0.9)
+    def suggest_param(self) -> dict:
+        pass
 
-    # 训练智能体
-    for episode in range(10):
-        observation = env.reset()
-        print(f"Episode: {episode}, Initial state: {observation}")
-        total_reward = 0
-        for step in range(100):
-            action, _ = agent.predict(observation)
-            action = np.array(action, dtype=int)
-            print(f"Step: {step}, State: {env.current_state}")
-            print(f"Step: {step}, Action: {action}")
-            observation, reward, done, info = env.step(action)
-            total_reward += reward
-            if done:
-                break
-        # if (episode+1) % 100 == 0:
-        print(f"Episode: {episode}, Total reward: {total_reward}, Last state: {observation}")
-    
-    # 训练结束后，保存智能体
-    agent.save("ppo_agent.pkl")
-    '''
+    def optimize(self):
+        # 训练智能体
+        for episode in range(1):
+            observation = self.env.reset()
+            print(f"Episode: {episode}, Initial state: {observation}")
+            observation, reward, done, info = self.env.step(observation)
+            total_reward = reward
+            # total_reward = 0
+            for step in range(self.iter_count):
+                action, _ = self.agent.predict(observation)
+                action = np.array(action, dtype=int)
+                # print(f"Step: {step}, State: {env.current_state}")
+                # print(f"Step: {step}, Action: {action}")
+                observation, reward, done, info = self.env.step(action)
+                total_reward += reward
+                if done:
+                    break
+            print(f"Episode: {episode}, Total reward: {total_reward}, Last state: {observation}")
 
-    # 创建动作噪声
-    n_actions = env.action_space.shape[-1]
-    action_noise = NormalActionNoise(mean=np.zeros(n_actions), sigma=0.1 * np.ones(n_actions))
-
-    # 创建DDPG智能体
-    agent = DDPG('MlpPolicy', env, action_noise=action_noise, verbose=1)
-
-    # 训练智能体
-    for episode in range(10):
-        observation = env.reset()
-        print(f"Episode: {episode}, Initial state: {observation}")
-        total_reward = 0
-        for step in range(100):
-            action, _ = agent.predict(observation)
-            action = np.array(action, dtype=int)
-            print(f"Step: {step}, State: {env.current_state}")
-            print(f"Step: {step}, Action: {action}")
-            observation, reward, done, info = env.step(action)
-            total_reward += reward
-            if done:
-                break
-        print(f"Episode: {episode}, Total reward: {total_reward}, Last state: {observation}")
-    
+    def visualize(self):
+        pass

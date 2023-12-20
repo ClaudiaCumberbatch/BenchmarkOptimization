@@ -2,7 +2,7 @@
 queue: ser
 core_count: 40
 node_count: 1
-algorithm_preference: random_search # random_search, optuna
+algorithm_preference: RL # random_search, optuna, RL
 iter_count: 2
 benchmark: HPL # HPL, HPCG
 

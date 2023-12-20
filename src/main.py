@@ -4,6 +4,7 @@ from optimizer import *
 from database import *
 from random_search import *
 from TPE import *
+from reinforcement_learning import *
 
 parser = argparse.ArgumentParser(description="specify the config file")
 parser.add_argument("-f", type=str, default="../config/config.yaml", help="config file")
@@ -37,6 +38,8 @@ if algorithm_preference == "random_search":
     optimzer = RandomSearchOptimizer(database_interactor, iter_count, config_param, benchmark)
 elif algorithm_preference == "TPE":
     optimzer = TPEOptimizer(database_interactor, iter_count, config_param, benchmark)
+elif algorithm_preference == "RL":
+    optimzer = RLOptimizer(database_interactor, iter_count, config_param, benchmark)
 
 # 运行优化器
 optimzer.optimize()

@@ -7,3 +7,6 @@ scipy
 plotly
 kaleido
 scikit-learn
+gym
+stable_baselines3
+shimmy>=0.2.1

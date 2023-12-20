@@ -4,6 +4,7 @@ import pandas as pd
 import os
 import traceback
 from abc import ABC, abstractmethod
+import sys
 from datetime import datetime
 import file_utils
 
@@ -86,6 +87,7 @@ class database_interactor(ABC):
         except Exception as e:
             print(f"连接数据库时发生错误: {str(e)}")
             traceback.print_exc()
+            sys.exit(1)
             return None
 
     def store(self, data):
@@ -162,6 +164,9 @@ class HPL_interactor(database_interactor):
             print(f"查询数据库时发生错误: {str(e)}")
             traceback.print_exc()
             return None
+
+    # def run_and_predict(self, do_predict):
+        
 
     def get_data(self, new_param):
         try:
