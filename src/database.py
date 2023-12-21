@@ -6,7 +6,7 @@ import traceback
 from abc import ABC, abstractmethod
 import sys
 from datetime import datetime
-import file_utils
+from file_utils import *
 
 PMAP_dic = {
     0: "Row-major",
@@ -58,8 +58,9 @@ BCAST_dic = {
 
 # 定义抽象类
 class database_interactor(ABC):
-    def __init__(self):
-        config = file_utils.config
+    def __init__(self, file_interactor):
+        self.file_interactor = file_interactor
+        config = file_interactor.get_global_config()
         self.table_name = config['queue']
         self.cores = config['core_count']
         path_to_HPL = config['path_to_HPL']
@@ -116,8 +117,8 @@ class database_interactor(ABC):
 
 # 子类实现抽象方法和继承/重写具体方法
 class HPL_interactor(database_interactor):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, file_interactor):
+        super().__init__(file_interactor)
         self.name = 'HPL'
         self.conn = self.connect('../db/HPL.db')
 
@@ -174,10 +175,10 @@ class HPL_interactor(database_interactor):
             result = self.query(param_list)
             # 如果查询结果为空，执行搜索程序，将新结果写入数据库
             if len(result) == 0:
-                print(file_utils.write_to_HPL_dat('HPL.dat', new_param, self.cores))
+                print(self.file_interactor.write_to_dat('HPL.dat', new_param))
                 date = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
                 os.system(f"{self.mpi} -np {self.cores} {self.path_to_HPL_exe} > ../logs/{date}.out 2> ../logs/{date}.err")
-                data = file_utils.parse_HPL_dat(f"../logs/{date}.out")
+                data = self.file_interactor.parse_log(f"../logs/{date}.out")
                 self.store(data)
                 result = data["Gflops"]
             result = np.mean(result)
@@ -189,8 +190,8 @@ class HPL_interactor(database_interactor):
         
     
 class HPCG_interactor(database_interactor):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, file_interactor):
+        super().__init__(file_interactor)
         self.name = 'HPCG'
         self.conn = self.connect('../db/HPCG.db')
 
@@ -227,7 +228,7 @@ class HPCG_interactor(database_interactor):
             # 如果查询结果为空，执行搜索程序，将新结果写入数据库
             if len(result) == 0: # type: ignore
                 # print('did not find the result in the database')
-                print(file_utils.write_to_HPCG_dat('hpcg.dat', new_param))
+                print(self.file_interactor.write_to_dat('hpcg.dat', new_param))
                 date = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
                 os.system(f"{self.mpi} -np {self.cores} {self.path_to_HPCG_exe} > ../logs/{date}.out 2> ../logs/{date}.err" )
                 out_file_path = f"../logs/{date}.out"
@@ -246,7 +247,7 @@ class HPCG_interactor(database_interactor):
                     # As all HPCG output .txt files are sorted by descending order of time,
                     # the first file is the latest one
                     HPCG_file_name = HPCG_file_names[0]
-                    data = file_utils.parse_HPCG_txt(HPCG_file_name)
+                    data = self.file_interactor.parse_log(HPCG_file_name)
                 elif os.path.getsize(out_file_path) != 0:
                     print("HPCG failed to run: problem sizes out of range")
                     data = {

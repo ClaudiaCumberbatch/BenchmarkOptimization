@@ -4,14 +4,14 @@ from optimizer import *
 from database import *
 from random_search import *
 from TPE import *
-from reinforcement_learning import *
+
 
 parser = argparse.ArgumentParser(description="specify the config file")
 parser.add_argument("-f", type=str, default="../config/config.yaml", help="config file")
 args = parser.parse_args()
 config_filepath = args.f
 
-config = parse_config_yaml(config_filepath)
+config = file_interactor.parse_config(config_filepath)
 print("config", config)
 
 # 现在，config是一个包含配置的字典
@@ -24,22 +24,23 @@ benchmark = config['benchmark']
 
 # 根据benchmark指定database_interactor和config_param
 database_interactor = None
-config_param = {}
+file_interactor = None
 if benchmark == "HPL":
-    database_interactor = HPL_interactor()
-    config_param = get_HPL_params()
+    file_interactor = HPL_file_interactor(config_filepath)
+    database_interactor = HPL_interactor(file_interactor)
 elif benchmark == "HPCG":
-    database_interactor = HPCG_interactor()
-    config_param = get_HPCG_params()
+    file_interactor = HPCG_file_interactor(config_filepath)
+    database_interactor = HPCG_interactor(file_interactor)
 
 # 根据algorithm_preference指定算法
 optimzer = None
 if algorithm_preference == "random_search":
-    optimzer = RandomSearchOptimizer(database_interactor, iter_count, config_param, benchmark)
+    optimzer = RandomSearchOptimizer(database_interactor, file_interactor, iter_count, benchmark)
 elif algorithm_preference == "TPE":
-    optimzer = TPEOptimizer(database_interactor, iter_count, config_param, benchmark)
+    optimzer = TPEOptimizer(database_interactor, file_interactor, iter_count, benchmark)
 elif algorithm_preference == "RL":
-    optimzer = RLOptimizer(database_interactor, iter_count, config_param, benchmark)
+    from reinforcement_learning import *
+    optimzer = RLOptimizer(database_interactor, file_interactor, iter_count, benchmark)
 
 # 运行优化器
 optimzer.optimize()

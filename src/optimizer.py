@@ -1,12 +1,14 @@
 from abc import ABC, abstractmethod
 from database import database_interactor
+from file_utils import file_interactor
 import time
 
 class Optimizer(ABC):
-    def __init__(self, database_interactor: database_interactor, iter_count: int, config_param: dict, benchmark: str):
+    def __init__(self, database_interactor: database_interactor, file_interactor: file_interactor, iter_count: int, benchmark: str):
         self.database_interactor = database_interactor  
-        self.iter_count = iter_count
-        self.config_param = config_param      
+        self.file_interactor = file_interactor   
+        self.config_param = file_interactor.get_config_param()
+        self.iter_count = iter_count   
         self.benchmark = benchmark
         self.time = 0
         self.GFlops = 0

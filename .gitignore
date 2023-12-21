@@ -4,3 +4,4 @@
 *.err
 *.out
 *.txt
+!requirements.txt

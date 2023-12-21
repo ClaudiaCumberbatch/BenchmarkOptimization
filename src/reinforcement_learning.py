@@ -16,12 +16,9 @@ from stable_baselines3.common.noise import NormalActionNoise
 '''
 class SearchEnv(gym.Env):
     
-    def __init__(self, database_interactor):
+    def __init__(self, database_interactor, file_interactor):
         # 定义参数范围
-        if (database_interactor.name == 'HPL'):
-            param_ranges = get_HPL_params()
-        else:
-            param_ranges = get_HPCG_params()
+        param_ranges = file_interactor.get_config_param()
         super(SearchEnv, self).__init__()
         self.hyperparameter_ranges = param_ranges
         self.current_hyperparameters = {}
@@ -81,10 +78,10 @@ class SearchEnv(gym.Env):
         return self.current_state
 
 class RLOptimizer(Optimizer):
-    def __init__(self, database_interactor: database_interactor, iter_count: int, config_param: dict, benchmark: str):
-        super().__init__(database_interactor, iter_count, config_param, benchmark)
+    def __init__(self, database_interactor: database_interactor, file_interactor: file_interactor, iter_count: int, benchmark: str):
+        super().__init__(database_interactor, file_interactor, iter_count, benchmark)
         self.name = "RL"
-        self.env = SearchEnv(database_interactor)
+        self.env = SearchEnv(database_interactor, file_interactor)
         # 创建动作噪声
         n_actions = self.env.action_space.shape[-1]
         self.action_noise = NormalActionNoise(mean=np.zeros(n_actions), sigma=0.1 * np.ones(n_actions))

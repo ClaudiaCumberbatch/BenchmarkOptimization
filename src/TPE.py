@@ -14,8 +14,8 @@ import plotly.io as pio
 import plotly.graph_objects as go
 
 class TPEOptimizer(Optimizer):
-    def __init__(self, database_interactor, iter_count, config_param, benchmark):
-        super().__init__(database_interactor, iter_count, config_param, benchmark)
+    def __init__(self, database_interactor, file_interactor, iter_count, benchmark):
+        super().__init__(database_interactor, file_interactor, iter_count, benchmark)
         self.name = "TPE"
 
     def objective(self, trial):

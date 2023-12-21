@@ -74,4 +74,5 @@ NZ:
   type: int
 Time: 
   range: [1860, 1860]
+  step: 1
   type: int
