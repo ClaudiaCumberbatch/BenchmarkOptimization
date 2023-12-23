@@ -16,13 +16,13 @@ from stable_baselines3.common.noise import NormalActionNoise
 '''
 class SearchEnv(gym.Env):
     
-    def __init__(self, database_interactor, file_interactor):
+    def __init__(self, database_int, file_interactor):
         # 定义参数范围
         param_ranges = file_interactor.get_config_param()
         super(SearchEnv, self).__init__()
         self.hyperparameter_ranges = param_ranges
         self.current_hyperparameters = {}
-        self.database_interactor = database_interactor
+        self.database_interactor = database_int
 
         print(param_ranges)
 
@@ -61,8 +61,8 @@ class SearchEnv(gym.Env):
 
     def step(self, action):
         # 根据动作更新超参数
-        # print('action:', action)
-        reward = self.database_interactor.get_data(self.list2dic(action))
+        new_params = self.list2dic(action)
+        reward = self.database_interactor.get_data(new_params)
         # reward = np.sum(action)-action[0]-action[1]
         # if (np.random.rand() < 0.5):
         #     reward = -np.sum(action)
@@ -78,7 +78,7 @@ class SearchEnv(gym.Env):
         return self.current_state
 
 class RLOptimizer(Optimizer):
-    def __init__(self, database_interactor: database_interactor, file_interactor: file_interactor, iter_count: int, benchmark: str):
+    def __init__(self, database_interactor, file_interactor, iter_count, benchmark):
         super().__init__(database_interactor, file_interactor, iter_count, benchmark)
         self.name = "RL"
         self.env = SearchEnv(database_interactor, file_interactor)

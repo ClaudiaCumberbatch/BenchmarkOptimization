@@ -7,6 +7,9 @@ from abc import ABC, abstractmethod
 import sys
 from datetime import datetime
 from file_utils import *
+from predictor import *
+from multiprocessing import Process, Queue
+import subprocess
 
 PMAP_dic = {
     0: "Row-major",
@@ -68,6 +71,7 @@ class database_interactor(ABC):
         path_to_HPCG = config['path_to_HPCG']
         self.path_to_HPCG_exe = os.path.expanduser(path_to_HPCG + "xhpcg")
         self.mpi = config['mpi']
+        self.need_predict = config['need_predict']
 
     def __del__(self):
         self.close()
@@ -164,12 +168,19 @@ class HPL_interactor(database_interactor):
         except Exception as e:
             print(f"查询数据库时发生错误: {str(e)}")
             traceback.print_exc()
-            return None
-
-    # def run_and_predict(self, do_predict):
-        
+            return None       
 
     def get_data(self, new_param):
+        def task_HPL(date):
+            command = f"{self.mpi} -np {self.cores} {self.path_to_HPL_exe} > ../logs/{date}.out 2> ../logs/{date}.err"
+            process = subprocess.Popen(command, shell=True)
+            return process.pid
+
+        def task_predict(date, HPL_pid, q):
+            p = predictor()
+            res = p.control(f'../logs/{date}.out', 0.1, HPL_pid)
+            q.put(res[0])
+
         try:
             param_list = [self.cores, new_param["PMAP"], new_param["SWAP"], new_param["L1"], new_param["U"], new_param["EQUIL"], new_param["DEPTH"], new_param["BCAST"], new_param["RFACT"], new_param["NDIV"], new_param["PFACT"], new_param["NBMIN"], new_param["N"], new_param["NB"], self.cores // new_param['Q'], new_param["Q"]]
             result = self.query(param_list)
@@ -177,10 +188,21 @@ class HPL_interactor(database_interactor):
             if len(result) == 0:
                 print(self.file_interactor.write_to_dat('HPL.dat', new_param))
                 date = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
-                os.system(f"{self.mpi} -np {self.cores} {self.path_to_HPL_exe} > ../logs/{date}.out 2> ../logs/{date}.err")
-                data = self.file_interactor.parse_log(f"../logs/{date}.out")
-                self.store(data)
-                result = data["Gflops"]
+                if self.need_predict:
+                    q = Queue()
+                    process_HPL = Process(target=task_HPL(date))
+                    process_HPL.start()
+                    print(f"HPL pid: {process_HPL.pid}")
+                    process_predict = Process(target=task_predict(date, process_HPL.pid, q))
+                    process_predict.start()
+                    process_predict.join()
+                    result = q.get()
+                    return result
+                else:
+                    os.system(f"{self.mpi} -np {self.cores} {self.path_to_HPL_exe} > ../logs/{date}.out 2> ../logs/{date}.err")
+                    data = self.file_interactor.parse_log(f"../logs/{date}.out")
+                    self.store(data)
+                    result = data["Gflops"]
             result = np.mean(result)
             return result
         except Exception as e:
