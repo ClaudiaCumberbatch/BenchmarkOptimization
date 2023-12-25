@@ -1,0 +1,73 @@
+================================================================================
+HPLinpack 2.3  --  High-Performance Linpack benchmark  --   December 2, 2018
+Written by A. Petitet and R. Clint Whaley,  Innovative Computing Laboratory, UTK
+Modified by Piotr Luszczek, Innovative Computing Laboratory, UTK
+Modified by Julien Langou, University of Colorado Denver
+================================================================================
+
+An explanation of the input/output parameters follows:
+T/V    : Wall time / encoded variant.
+N      : The order of the coefficient matrix A.
+NB     : The partitioning blocking factor.
+P      : The number of process rows.
+Q      : The number of process columns.
+Time   : Time in seconds to solve the linear system.
+Gflops : Rate of execution for solving the linear system.
+
+The following parameter values will be used:
+
+N      :   84059 
+NB     :     647 
+PMAP   : Row-major process mapping
+P      :       5 
+Q      :       8 
+PFACT  :   Crout 
+NBMIN  :      14 
+NDIV   :       6 
+RFACT  :   Crout 
+BCAST  :  BlongM 
+DEPTH  :       6 
+SWAP   : Spread-roll (long)
+L1     : transposed form
+U      : transposed form
+EQUIL  : no
+ALIGN  : 8 double precision words
+
+Column=000003882 Fraction= 4.6% Gflops=1.342e+04
+Column=000004529 Fraction= 5.4% Gflops=5.335e+03
+Column=000005176 Fraction= 6.2% Gflops=3.521e+03
+Column=000005823 Fraction= 6.9% Gflops=2.846e+03
+Column=000006470 Fraction= 7.7% Gflops=2.474e+03
+Column=000007117 Fraction= 8.5% Gflops=2.255e+03
+Column=000007764 Fraction= 9.2% Gflops=2.097e+03
+Column=000008411 Fraction=10.0% Gflops=1.967e+03
+Column=000009058 Fraction=10.8% Gflops=1.865e+03
+Column=000009705 Fraction=11.5% Gflops=1.789e+03
+Column=000010352 Fraction=12.3% Gflops=1.726e+03
+Column=000010999 Fraction=13.1% Gflops=1.682e+03
+Column=000011646 Fraction=13.9% Gflops=1.643e+03
+Column=000012293 Fraction=14.6% Gflops=1.602e+03
+Column=000012940 Fraction=15.4% Gflops=1.571e+03
+Column=000013587 Fraction=16.2% Gflops=1.541e+03
+Column=000014234 Fraction=16.9% Gflops=1.512e+03
+Column=000014881 Fraction=17.7% Gflops=1.490e+03
+Column=000015528 Fraction=18.5% Gflops=1.469e+03
+Column=000016175 Fraction=19.2% Gflops=1.452e+03
+Column=000016822 Fraction=20.0% Gflops=1.433e+03
+Column=000017469 Fraction=20.8% Gflops=1.422e+03
+Column=000018116 Fraction=21.6% Gflops=1.408e+03
+Column=000018763 Fraction=22.3% Gflops=1.393e+03
+Column=000019410 Fraction=23.1% Gflops=1.381e+03
+Column=000020057 Fraction=23.9% Gflops=1.368e+03
+Column=000020704 Fraction=24.6% Gflops=1.357e+03
+Column=000021351 Fraction=25.4% Gflops=1.349e+03
+Column=000021998 Fraction=26.2% Gflops=1.339e+03
+Column=000022645 Fraction=26.9% Gflops=1.331e+03
+Column=000023292 Fraction=27.7% Gflops=1.324e+03
+Column=000023939 Fraction=28.5% Gflops=1.316e+03
+Column=000024586 Fraction=29.2% Gflops=1.308e+03
+Column=000025233 Fraction=30.0% Gflops=1.301e+03
+Column=000025880 Fraction=30.8% Gflops=1.294e+03
+Column=000026527 Fraction=31.6% Gflops=1.288e+03
+Column=000027174 Fraction=32.3% Gflops=1.283e+03
+Column=000027821 Fraction=33.1% Gflops=1.277e+03

@@ -1,5 +1,5 @@
 #!/bin/bash
-#BSUB -q ser
+#BSUB -q debug
 #BSUB -n 40
 #BSUB -e %J.err
 #BSUB -o %J.out

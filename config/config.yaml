@@ -5,12 +5,13 @@ node_count: 1
 algorithm_preference: RL # random_search, optuna, RL
 iter_count: 2
 benchmark: HPL # HPL, HPCG
+need_predict: True # True, False
 
 # MPI command
 mpi: mpiexec.hydra
 
 # binary path
-path_to_HPL: ~/HPL/hpl-2.3/bin/Linux_Intel64/
+path_to_HPL: ~/hpl/hpl-2.3/bin/Linux_Intel64/
 path_to_HPCG: ~/HPCG/hpcg/build/bin/
 
 # HPL parameter range

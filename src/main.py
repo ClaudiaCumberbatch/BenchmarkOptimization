@@ -24,26 +24,24 @@ benchmark = config['benchmark']
 
 
 # 根据benchmark指定database_interactor和config_param
-database_interactor = None
-file_interactor = None
+database_int = None
+file_int = None
 if benchmark == "HPL":
-    file_interactor = HPL_file_interactor(config_filepath)
-    database_interactor = HPL_interactor(file_interactor)
+    file_int = HPL_file_interactor(config_filepath)
+    database_int = HPL_interactor(file_int)
 elif benchmark == "HPCG":
-    file_interactor = HPCG_file_interactor(config_filepath)
-    database_interactor = HPCG_interactor(file_interactor)
+    file_int = HPCG_file_interactor(config_filepath)
+    database_int = HPCG_interactor(file_int)
 
 # 根据algorithm_preference指定算法
 optimzer = None
 if algorithm_preference == "random_search":
-    optimzer = RandomSearchOptimizer(database_interactor, file_interactor, iter_count, benchmark)
+    optimzer = RandomSearchOptimizer(database_int, file_int, iter_count, benchmark)
 elif algorithm_preference == "TPE":
-    optimzer = TPEOptimizer(database_interactor, file_interactor, iter_count, benchmark)
-elif algorithm_preference == "GP":
-    optimzer = GPOptimizer(database_interactor, file_interactor, iter_count, benchmark)
+    optimzer = TPEOptimizer(database_int, file_int, iter_count, benchmark)
 elif algorithm_preference == "RL":
     from reinforcement_learning import *
-    optimzer = RLOptimizer(database_interactor, file_interactor, iter_count, benchmark)
+    optimzer = RLOptimizer(database_int, file_int, iter_count, benchmark)
 
 # 运行优化器
 optimzer.optimize()
