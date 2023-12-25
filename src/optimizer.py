@@ -43,7 +43,10 @@ class Optimizer(ABC):
         print(f"Benchmark Name: {self.benchmark}")
         print(f"iter_count: {self.iter_count}")
         for key, value in self.best_params.items():
-            print("{:<10} : {}".format(key, value))
+            if self.config_param[key]['type'] == 'int':
+                print("{:<10} : {}".format(key, value * self.config_param[key]['step']))
+            else:
+                print("{:<10} : {}".format(key, value))
         print(f"The total duration: {self.time}")
         print(f"GFlops: {self.GFlops}")
         print("--------------------------------------------------")
