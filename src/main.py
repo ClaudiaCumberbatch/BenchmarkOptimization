@@ -5,6 +5,7 @@ from database import *
 from random_search import *
 from TPE import *
 from GP import *
+from GA import *
 
 
 parser = argparse.ArgumentParser(description="specify the config file")
@@ -39,6 +40,10 @@ if algorithm_preference == "random_search":
     optimzer = RandomSearchOptimizer(database_int, file_int, iter_count, benchmark)
 elif algorithm_preference == "TPE":
     optimzer = TPEOptimizer(database_int, file_int, iter_count, benchmark)
+elif algorithm_preference == "GP":
+    optimzer = GPOptimizer(database_int, file_int, iter_count, benchmark)
+elif algorithm_preference == "GA":
+    optimzer = GAOptimizer(database_int, file_int, iter_count, benchmark)
 elif algorithm_preference == "RL":
     from reinforcement_learning import *
     optimzer = RLOptimizer(database_int, file_int, iter_count, benchmark)
