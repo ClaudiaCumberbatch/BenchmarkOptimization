@@ -4,4 +4,5 @@
 *.err
 *.out
 *.txt
+*.submit
 !requirements.txt

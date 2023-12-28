@@ -7,17 +7,18 @@ def task(HPL_pid, q):
     res = p.control('../logs/test.log', 0.3, HPL_pid)
     q.put(res)
 
-def HPL_simu():
+def HPL_simu(q):
     command = "watch -n 1 bjobs"
     process = subprocess.Popen(command, shell=True)
-    return process.pid
+    q.put(process.pid)
 
 if __name__ == "__main__":
     q = Queue()
-    process_HPL = Process(target=HPL_simu)
+    q2 = Queue()
+    process_HPL = Process(target=HPL_simu(q2))
     process_HPL.start()
-    print(f"HPL pid: {process_HPL.pid}")
-    process_predict = Process(target=task(process_HPL.pid, q))
+    # print(f"HPL pid: {process_HPL.pid}")
+    process_predict = Process(target=task(q2.get(), q))
     process_predict.start()
     process_predict.join()
    

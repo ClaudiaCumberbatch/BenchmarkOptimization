@@ -1,4 +1,4 @@
-rm *.err *.out *.txt
+rm *.err *.out *.txt *.submit
 cd ../logs
 rm *.err *.out *.txt *.png
 cd ../src

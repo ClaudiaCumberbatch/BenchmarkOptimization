@@ -97,6 +97,9 @@ class RLOptimizer(Optimizer):
             observation = self.env.reset()
             print(f"Episode: {episode}, Initial state: {observation}")
             observation, reward, done, info = self.env.step(observation)
+            if reward > self.GFlops:
+                self.GFlops = reward
+                self.best_params = self.env.list2dic(observation)
             total_reward = reward
             # total_reward = 0
             for step in range(self.iter_count):
@@ -105,6 +108,9 @@ class RLOptimizer(Optimizer):
                 # print(f"Step: {step}, State: {env.current_state}")
                 # print(f"Step: {step}, Action: {action}")
                 observation, reward, done, info = self.env.step(action)
+                if reward > self.GFlops:
+                    self.GFlops = reward
+                    self.best_params = self.env.list2dic(observation)
                 total_reward += reward
                 if done:
                     break

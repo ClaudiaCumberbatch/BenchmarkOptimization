@@ -171,14 +171,17 @@ class HPL_interactor(database_interactor):
             return None       
 
     def get_data(self, new_param):
-        def task_HPL(date):
+        def task_HPL(date, q):
             command = f"{self.mpi} -np {self.cores} {self.path_to_HPL_exe} > ../logs/{date}.out 2> ../logs/{date}.err"
             process = subprocess.Popen(command, shell=True)
-            return process.pid
+            print(f"pid: {process.pid}")
+            pids = [pid for pid in os.listdir('/proc') if pid.isdigit()]
+            print("pids: ", pids)
+            q.put(pids)
 
-        def task_predict(date, HPL_pid, q):
+        def task_predict(date, HPL_pids, q):
             p = predictor()
-            res = p.control(f'../logs/{date}.out', 0.1, HPL_pid)
+            res = p.control(f'../logs/{date}.out', f'../logs/{date}.err', 0.01, HPL_pids)
             q.put(res[0])
 
         try:
@@ -189,11 +192,11 @@ class HPL_interactor(database_interactor):
                 print(self.file_interactor.write_to_dat('HPL.dat', new_param))
                 date = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
                 if self.need_predict:
-                    q = Queue()
-                    process_HPL = Process(target=task_HPL(date))
+                    q = Queue() # 用来传递预测结果
+                    q2 = Queue() # 用来传递HPL进程pid
+                    process_HPL = Process(target=task_HPL(date, q2))
                     process_HPL.start()
-                    print(f"HPL pid: {process_HPL.pid}")
-                    process_predict = Process(target=task_predict(date, process_HPL.pid, q))
+                    process_predict = Process(target=task_predict(date, q2.get(), q))
                     process_predict.start()
                     process_predict.join()
                     result = q.get()
@@ -208,6 +211,7 @@ class HPL_interactor(database_interactor):
         except Exception as e:
             print(f"获取数据时发生错误: {str(e)}")
             traceback.print_exc()  # 打印异常的详细信息，包括行数
+            # sys.exit(1)
             return None
         
     
