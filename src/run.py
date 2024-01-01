@@ -1,4 +1,5 @@
 from provider import *
+import argparse
 
 command = '''
 #-------------intelmpi+ifort------------------------------------------
@@ -9,9 +10,15 @@ module load mpi/intel/2018.3
 
 #---------------------------------------------------------------------
 source activate /work/cse-zhousc/.conda/envs/HPL_env
-python main.py
 '''
 
 if __name__=="__main__":
+    parser = argparse.ArgumentParser(description="specify the config file")
+    parser.add_argument("-f", type=str, default="../config/config.yaml", help="config file")
+    args = parser.parse_args()
+    config_filepath = args.f
+
     p = LSFProvider()
-    p.submit(command)
+    cmd = "python main.py -f {}".format(config_filepath)
+    # print(command+cmd)
+    p.submit(command+cmd)
