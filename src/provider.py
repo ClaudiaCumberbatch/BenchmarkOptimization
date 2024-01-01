@@ -71,6 +71,5 @@ class LSFProvider(ClusterProvider):
         self._write_submit_script(lsf_template_string, script_path, job_name, job_config)
         
         cmd = "bsub < {0}".format(script_path)
-        print(cmd)
         os.system(cmd)
         

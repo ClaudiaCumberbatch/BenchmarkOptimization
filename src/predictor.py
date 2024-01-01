@@ -40,27 +40,7 @@ class predictor():
         return model.predict(gflops)
 
 
-    def is_current_user(self, pid):
-        # 获取当前用户的UID
-        current_uid = os.getuid()
-        # 构造进程的status文件路径
-        status_file = f'/proc/{pid}/status'
-        # 打开并读取status文件
-        with open(status_file, 'r') as f:
-            lines = f.readlines()
-        # 查找'Uid:'字段
-        for line in lines:
-            if line.startswith('Uid:'):
-                # 提取用户ID
-                print(line)
-                uid = int(line.split()[1])
-                # 比较用户ID
-                return uid == current_uid
-        # 如果没有找到'Uid:'字段，返回False
-        return False
-
-
-    def control(self, log_path, err_path, pre_pctg, HPL_pids):
+    def control(self, log_path, err_path, pre_pctg):
         '''
         读log文件, 判断是否达到要求, 终止HPL运行
         '''
@@ -78,10 +58,8 @@ class predictor():
                 continue
             # 终止HPL运行, 进行预测
             if (log_df.iloc[-1]['Fraction'] >= pre_pctg): 
-                for HPL_pid in HPL_pids:
-                    # if self.is_current_user(int(HPL_pid)):
-                    # TODO: os.kill无法终止全部mpi运行
-                    os.kill(int(HPL_pid), 9)
+                os.system('kill -9 $(ps -aux | grep mpiexec.hydra | awk \'{print $2}\')')
+                time.sleep(1)
                 res = self.predict(log_df, '../model/model_0.3.pkl')
                 return res
                 

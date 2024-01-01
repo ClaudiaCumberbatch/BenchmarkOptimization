@@ -171,17 +171,17 @@ class HPL_interactor(database_interactor):
             return None       
 
     def get_data(self, new_param):
-        def task_HPL(date, q):
-            command = f"{self.mpi} -np {self.cores} {self.path_to_HPL_exe} > ../logs/{date}.out 2> ../logs/{date}.err"
-            process = subprocess.Popen(command, shell=True)
-            print(f"pid: {process.pid}")
-            pids = [pid for pid in os.listdir('/proc') if pid.isdigit()]
-            print("pids: ", pids)
-            q.put(pids)
-
-        def task_predict(date, HPL_pids, q):
+        def task_HPL(date):
+            # command = f"{self.mpi} -np {self.cores} {self.path_to_HPL_exe} > ../logs/{date}.out 2> ../logs/{date}.err"
+            # process = subprocess.Popen(command, shell=True)
+            # print(process.pid)
+            command = f"{self.mpi} -np {self.cores} {self.path_to_HPL_exe}"
+            os.system(f"{command} > ../logs/{date}.out 2> ../logs/{date}.err")
+            
+        def task_predict(date, q):
             p = predictor()
-            res = p.control(f'../logs/{date}.out', f'../logs/{date}.err', 0.01, HPL_pids)
+            # TODO: pctg
+            res = p.control(f'../logs/{date}.out', f'../logs/{date}.err', 0.1)
             q.put(res[0])
 
         try:
@@ -193,10 +193,9 @@ class HPL_interactor(database_interactor):
                 date = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
                 if self.need_predict:
                     q = Queue() # 用来传递预测结果
-                    q2 = Queue() # 用来传递HPL进程pid
-                    process_HPL = Process(target=task_HPL(date, q2))
+                    process_HPL = Process(target=task_HPL, args=(date,))
                     process_HPL.start()
-                    process_predict = Process(target=task_predict(date, q2.get(), q))
+                    process_predict = Process(target=task_predict, args=(date, q,))
                     process_predict.start()
                     process_predict.join()
                     result = q.get()
