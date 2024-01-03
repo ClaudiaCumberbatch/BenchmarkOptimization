@@ -24,13 +24,12 @@ $user_script
 class ClusterProvider():
     def __init__(self,
                  label,
-                 config_filepath
+                 config
                  ):
 
         self._label = label
         self.script_dir = '../scripts'
 
-        config = file_interactor.parse_config(config_filepath)
         self.queue = config['queue']
         self.core = config['core_count']
 
@@ -53,9 +52,9 @@ class ClusterProvider():
         return True
     
 class LSFProvider(ClusterProvider):
-    def __init__(self, config_filepath="../config/config.yaml"):
+    def __init__(self, config):
         label = 'LSF'
-        super().__init__(label, config_filepath)
+        super().__init__(label, config)
 
     def submit(self, command, job_name="lsf"):
         job_name = "{0}.{1}".format(job_name, time.time())
@@ -73,5 +72,5 @@ class LSFProvider(ClusterProvider):
         self._write_submit_script(lsf_template_string, script_path, job_name, job_config)
         
         cmd = "bsub < {0}".format(script_path)
-        os.system(cmd)
+        # os.system(cmd)
         

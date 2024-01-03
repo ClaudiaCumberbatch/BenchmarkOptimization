@@ -13,6 +13,7 @@ mpi: mpiexec.hydra
 # binary path
 path_to_HPL: ~/hpl/hpl-2.3/bin/Linux_Intel64/
 path_to_HPCG: ~/HPCG/hpcg/build/bin/
+path_to_env: /work/cse-zhousc/.conda/envs/HPL_env
 
 # HPL parameter range
 N: 

@@ -1,4 +1,5 @@
 from provider import *
+from file_utils import *
 import argparse
 
 command = '''
@@ -18,7 +19,10 @@ if __name__=="__main__":
     args = parser.parse_args()
     config_filepath = args.f
 
-    p = LSFProvider()
-    cmd = "python main.py -f {}".format(config_filepath)
-    # print(command+cmd)
-    p.submit(command+cmd)
+    config = file_interactor.parse_config(config_filepath)
+
+    p = LSFProvider(config)
+    main_cmd = "python main.py -f {}".format(config_filepath)
+    activate_cmd = "source activate {}".format(config['path_to_env'])
+    print(command + activate_cmd + main_cmd)
+    p.submit(command+main_cmd)
