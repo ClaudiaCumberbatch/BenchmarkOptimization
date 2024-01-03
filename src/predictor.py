@@ -60,6 +60,6 @@ class predictor():
             if (log_df.iloc[-1]['Fraction'] >= pre_pctg): 
                 os.system('kill -9 $(ps -aux | grep mpiexec.hydra | awk \'{print $2}\')')
                 time.sleep(1)
-                res = self.predict(log_df, '../model/model_0.3.pkl')
+                res = self.predict(log_df, f'../model/model_{pre_pctg}.pkl')
                 return res
                 

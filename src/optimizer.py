@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 from database import database_interactor
 from file_utils import file_interactor
 import time
+import traceback
 
 class Optimizer(ABC):
     def __init__(self, database_interactor: database_interactor, file_int: file_interactor, iter_count: int, benchmark: str):

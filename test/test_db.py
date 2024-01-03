@@ -21,10 +21,15 @@ def get_param():
     return params
 
 if __name__ == "__main__":
+    config_filepath = "../config/config.yaml"
     param = get_param()
     print(param)
-    config = parse_config_yaml("../config/config.yaml")
+
+    config = file_interactor.parse_config(config_filepath)
     print(config)
-    hpl_int = HPL_interactor()
+
+    file_int = HPL_file_interactor(config_filepath)
+    hpl_int = HPL_interactor(file_int)
+    
     res = hpl_int.get_data(param)
     print(res)

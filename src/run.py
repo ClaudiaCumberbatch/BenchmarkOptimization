@@ -24,5 +24,5 @@ if __name__=="__main__":
     p = LSFProvider(config)
     main_cmd = "python main.py -f {}".format(config_filepath)
     activate_cmd = "source activate {}".format(config['path_to_env'])
-    print(command + activate_cmd + main_cmd)
+    # print(command + activate_cmd + main_cmd)
     p.submit(command+main_cmd)

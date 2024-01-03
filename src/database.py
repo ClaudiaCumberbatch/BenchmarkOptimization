@@ -9,7 +9,6 @@ from datetime import datetime
 from file_utils import *
 from predictor import *
 from multiprocessing import Process, Queue
-import subprocess
 
 PMAP_dic = {
     0: "Row-major",
@@ -72,12 +71,17 @@ class database_interactor(ABC):
         self.path_to_HPCG_exe = os.path.expanduser(path_to_HPCG + "xhpcg")
         self.mpi = config['mpi']
         self.need_predict = config['need_predict']
+        if config['split_pctg'] not in np.arange(0.10, 0.50, 0.05):
+            print('split_pctg must be in range [0.1, 0.45], step 0.05, compulsory convert to 0.30')
+            self.split_pctg = 0.3
+        
+        self.split_pctg = config['split_pctg']
 
     def __del__(self):
         self.close()
 
     @abstractmethod
-    def query(self, param_list):
+    def query(self, param_list, table):
         pass
 
     @abstractmethod
@@ -95,14 +99,14 @@ class database_interactor(ABC):
             sys.exit(1)
             return None
 
-    def store(self, data):
+    def store(self, data, table):
         try:
             # 如果data的值都是标量，需要提供一个索引
             if all(isinstance(value, (int, float, str)) for value in data.values()):
                 data_df = pd.DataFrame(data, index=[0])
             else:
                 data_df = pd.DataFrame(data)
-            data_df.to_sql(self.table_name, self.conn, if_exists="append", index=False)
+            data_df.to_sql(table, self.conn, if_exists="append", index=False)
             return True
         except Exception as e:
             print(f"写入数据库时发生错误: {str(e)}")
@@ -124,18 +128,25 @@ class HPL_interactor(database_interactor):
     def __init__(self, file_interactor):
         super().__init__(file_interactor)
         self.name = 'HPL'
+        self.predict_table = self.table_name + '_predict'
         self.conn = self.connect('../db/HPL.db')
 
     def __del__(self):
         super().__del__()
 
-    def query(self, param_list):
+    def query(self, param_list, table):
         '''
+        返回最大的Gflops
         原方法声明
         def HPL_query(conn, table, cores, PMAP, SWAP, L1, U, EQUIL, DEPTH, BCAST, RFACT, NDIV, PFACT, NBMIN, N, NB, P, Q):
         '''
         try:
             cursor = self.conn.cursor()
+            # 检查表是否存在
+            cursor.execute(f"SELECT name FROM sqlite_master WHERE type='table' AND name='{table}'")
+            table_exists = cursor.fetchone()
+            if not table_exists: 
+                return []
             cores = param_list[0]
             PMAP = param_list[1]
             SWAP = param_list[2]
@@ -161,7 +172,7 @@ class HPL_interactor(database_interactor):
             RFACT = RFACT_dic[RFACT]
             PFACT = PFACT_dic[PFACT]
             BCAST = BCAST_dic[BCAST]
-            sql = f"SELECT Gflops FROM {self.table_name} WHERE cores={cores} AND PMAP='{PMAP}' AND SWAP='{SWAP}' AND L1='{L1}' AND U='{U}' AND EQUIL='{EQUIL}' AND DEPTH={DEPTH} AND BCAST='{BCAST}' AND RFACT='{RFACT}' AND NDIV={NDIV} AND PFACT='{PFACT}' AND NBMIN={NBMIN} AND N={N} AND NB={NB} AND P={P} AND Q={Q}"
+            sql = f"SELECT Gflops FROM {table} WHERE cores={cores} AND PMAP='{PMAP}' AND SWAP='{SWAP}' AND L1='{L1}' AND U='{U}' AND EQUIL='{EQUIL}' AND DEPTH={DEPTH} AND BCAST='{BCAST}' AND RFACT='{RFACT}' AND NDIV={NDIV} AND PFACT='{PFACT}' AND NBMIN={NBMIN} AND N={N} AND NB={NB} AND P={P} AND Q={Q}"
             cursor.execute(sql)
             result = cursor.fetchall()
             return result
@@ -172,40 +183,44 @@ class HPL_interactor(database_interactor):
 
     def get_data(self, new_param):
         def task_HPL(date):
-            # command = f"{self.mpi} -np {self.cores} {self.path_to_HPL_exe} > ../logs/{date}.out 2> ../logs/{date}.err"
-            # process = subprocess.Popen(command, shell=True)
-            # print(process.pid)
             command = f"{self.mpi} -np {self.cores} {self.path_to_HPL_exe}"
             os.system(f"{command} > ../logs/{date}.out 2> ../logs/{date}.err")
             
-        def task_predict(date, q):
+        def task_predict(date, q, split_pctg):
             p = predictor()
             # TODO: pctg
-            res = p.control(f'../logs/{date}.out', f'../logs/{date}.err', 0.1)
+            res = p.control(f'../logs/{date}.out', f'../logs/{date}.err', split_pctg)
             q.put(res[0])
 
         try:
             param_list = [self.cores, new_param["PMAP"], new_param["SWAP"], new_param["L1"], new_param["U"], new_param["EQUIL"], new_param["DEPTH"], new_param["BCAST"], new_param["RFACT"], new_param["NDIV"], new_param["PFACT"], new_param["NBMIN"], new_param["N"], new_param["NB"], self.cores // new_param['Q'], new_param["Q"]]
-            result = self.query(param_list)
+            result = self.query(param_list, self.table_name)
             # 如果查询结果为空，执行搜索程序，将新结果写入数据库
             if len(result) == 0:
                 print(self.file_interactor.write_to_dat('HPL.dat', new_param))
                 date = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
                 if self.need_predict:
+                    result = self.query(param_list, self.predict_table)
+                    if len(result) != 0:
+                        return result
                     q = Queue() # 用来传递预测结果
                     process_HPL = Process(target=task_HPL, args=(date,))
                     process_HPL.start()
-                    process_predict = Process(target=task_predict, args=(date, q,))
+                    process_predict = Process(target=task_predict, args=(date, q, self.split_pctg,))
                     process_predict.start()
                     process_predict.join()
                     result = q.get()
+                    data = self.file_interactor.parse_log(f"../logs/{date}.out")
+                    data["Time"] = -1
+                    data["Gflops"] = result
+                    self.store(data, self.predict_table)
                     return result
                 else:
                     os.system(f"{self.mpi} -np {self.cores} {self.path_to_HPL_exe} > ../logs/{date}.out 2> ../logs/{date}.err")
                     data = self.file_interactor.parse_log(f"../logs/{date}.out")
-                    self.store(data)
+                    self.store(data, self.table_name)
                     result = data["Gflops"]
-            result = np.mean(result)
+            result = np.max(result)
             return result
         except Exception as e:
             print(f"获取数据时发生错误: {str(e)}")
@@ -223,7 +238,7 @@ class HPCG_interactor(database_interactor):
     def __del__(self):
         super().__del__()
 
-    def query(self, param_list):
+    def query(self, param_list, table):
         '''
         原方法声明
         def HPCG_query(conn, table, cores, NX, NY, NZ)
@@ -249,7 +264,7 @@ class HPCG_interactor(database_interactor):
     def get_data(self, new_param):
         try:
             param_list = [new_param['NX'], new_param['NY'], new_param['NZ'], new_param['Time']]
-            result = self.query(param_list)
+            result = self.query(param_list, self.table_name)
             # 如果查询结果为空，执行搜索程序，将新结果写入数据库
             if len(result) == 0: # type: ignore
                 # print('did not find the result in the database')
@@ -293,9 +308,9 @@ class HPCG_interactor(database_interactor):
                         "Time": new_param["Time"],
                         "Gflops": -1
                     }
-                self.store(data)
+                self.store(data, self.table_name)
                 result = data["Gflops"]       
-            result = np.mean(result)
+            result = np.max(result)
             return result
         except Exception as e:
             print(f"获取数据时发生错误: {str(e)}")

@@ -1,11 +1,12 @@
 # hardware configuration and algorithm configuration
-queue: ser
+queue: debug
 core_count: 40
 node_count: 1
 algorithm_preference: random_search # random_search, optuna, RL
 iter_count: 2
 benchmark: HPL # HPL, HPCG
 need_predict: True # True, False
+split_pctg: 0.3 # [0.10, 0.45], step 0.05
 
 # MPI command
 mpi: mpiexec.hydra
